@@ -1,0 +1,15 @@
+[workspace]
+root = "third_party/repos"
+clone_depth = 1
+
+[[repositories]]
+id = "borderless_tables_detection"
+full_name = "ShakilMahmudShuvo/Borderless-Tables-Detection"
+category = "fake_table_detector"
+priority = 2
+
+[[repositories]]
+id = "pdfplumber"
+full_name = "jsvine/pdfplumber"
+category = "fake_table_detector_reference"
+priority = 3
