@@ -1,0 +1,21 @@
+[workspace]
+root = "third_party/repos"
+clone_depth = 1
+
+[[repositories]]
+id = "html2pptx"
+full_name = "abdelkrimkr/html2pptx"
+category = "html_to_pptx_reference"
+priority = 3
+
+[[repositories]]
+id = "html2pptxgenjs"
+full_name = "it-beyondit/html2pptxgenjs"
+category = "rich_text_reference"
+priority = 2
+
+[[repositories]]
+id = "opendataloader_pdf"
+full_name = "opendataloader-project/opendataloader-pdf"
+category = "semantic_ir_reference"
+priority = 2
