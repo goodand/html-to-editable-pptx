@@ -1,0 +1,27 @@
+[workspace]
+root = "third_party/repos"
+clone_depth = 1
+
+[[repositories]]
+id = "backstopjs"
+full_name = "garris/BackstopJS"
+category = "fallback_policy_engine_validation"
+priority = 1
+
+[[repositories]]
+id = "visual_regression_tracker"
+full_name = "Visual-Regression-Tracker/Visual-Regression-Tracker"
+category = "fallback_policy_engine_validation"
+priority = 2
+
+[[repositories]]
+id = "looks_same"
+full_name = "gemini-testing/looks-same"
+category = "fallback_policy_engine_validation"
+priority = 2
+
+[[repositories]]
+id = "odiff"
+full_name = "dandavison/odiff"
+category = "fallback_policy_engine_validation"
+priority = 2
