@@ -345,3 +345,106 @@ A conversion is acceptable when:
 5. complex assets are explicitly marked as fallback regions;
 6. rendered PPTX is validated against the source screenshot;
 7. every lossy decision is recorded in a report.
+
+## Non-goals
+
+Non-goals exist to keep the work inside the correct responsibility boundary.
+
+> **Core concept**: A non-goal is not an unimportant thing. It is a boundary-setting device that defines what this decision or task is not responsible for.
+
+### Why non-goals matter here
+
+Non-goals should reduce scope drift in Codex or agent handoff work.
+
+Expected effect:
+
+- reduce the chance that Codex edits unrelated areas;
+- make handoff quality higher;
+- separate current task responsibility from future optimization;
+- make side effects visible without forcing the current task to solve all of them.
+
+### What is not a non-goal
+
+- A non-goal is not a failed state.
+- A non-goal is not a trivial issue that can be ignored.
+- A non-goal is not permission to produce unvalidated or unusable output.
+
+### Side-effect caution
+
+Some side effects may harm the system, but not every side effect is the responsibility of the current task.
+
+Use a non-goal when:
+
+```text
+we recognize the side effect
+but this task does not own the optimization or full remediation
+```
+
+### Non-goal categories
+
+| Case | Meaning | Example |
+|---|---|---|
+| State | Defines a state transition that is not guaranteed | Improve A state, but do not guarantee transition into B state |
+| Type | Excludes specific error types or exception classes from this task | Handle semantic HTML tables, but not arbitrary canvas chart recovery |
+| Performance: Null | No performance improvement target in this task | Build validated prototype first; no speed target |
+| Performance: Over | Avoid unnecessary high-spec or over-engineered work | Do not build a full browser engine or full CSS renderer |
+| Performance: Under | A known performance limit is not treated as a defect in this decision | Slow validation is acceptable in bootstrap phase |
+
+### Project non-goals
+
+#### Case: State
+
+- Do not guarantee pixel-perfect visual equality in the first implementation.
+- Do not guarantee that every rendered HTML node becomes a native PPT object.
+- Do not guarantee that every fallback region can later be automatically reconstructed into editable objects.
+- Do not guarantee that a generated PPTX will look identical across PowerPoint, Keynote, LibreOffice, and PowerPoint Online.
+
+#### Case: Type
+
+- Do not solve arbitrary canvas-to-native-PPT-chart reconstruction without source data.
+- Do not solve arbitrary SVG chart-to-native-PPT-chart reconstruction in the base pipeline.
+- Do not convert video into editable timeline objects; video may be represented as an asset or thumbnail.
+- Do not require GIF frame-level editing.
+- Do not require full CSS feature parity for `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, and complex `clip-path`.
+- Do not treat every div/grid layout as a semantic table unless table-like structure is detected by explicit rules.
+- Do not treat image OCR as the primary path for text extraction when DOM text is available.
+
+#### Case: Performance: Null
+
+- Do not optimize conversion speed before the Visual Object IR and validation reports exist.
+- Do not target batch-scale throughput before a single-page validated path is working.
+- Do not optimize memory usage before repository reuse and module boundaries are clear.
+
+#### Case: Performance: Over
+
+- Do not implement a custom CSS layout engine.
+- Do not reimplement browser rendering when Playwright can provide computed layout.
+- Do not build a full PDF parser for this project; use document parser references only for schema and processor design.
+- Do not build a full visual regression platform when existing diff tools can be used.
+- Do not create a large agent framework before concrete extraction, IR, mapping, and validation modules exist.
+
+#### Case: Performance: Under
+
+- It is acceptable for the first validated prototype to be slow.
+- It is acceptable for visual validation to run as a separate post-processing step.
+- It is acceptable for chart semantic extraction to be partial and library-specific.
+- It is acceptable for fake table detection to start with deterministic bbox clustering before ML-based detection.
+
+### Non-goal review rule
+
+When a new task is created, include a short non-goal block if the task could drift into neighboring work.
+
+Recommended format:
+
+```text
+Goal:
+- ...
+
+Non-goals:
+- Case: State: ...
+- Case: Type: ...
+- Case: Performance: ...
+
+Validation:
+- ...
+```
