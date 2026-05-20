@@ -448,3 +448,450 @@ Non-goals:
 Validation:
 - ...
 ```
+
+## Technical Problems and Tasks
+
+This section turns the goal into implementation work. Each technical problem must have an explicit cause, required input, expected output, reuse candidate, implementation task, validation rule, and non-goal boundary.
+
+### 1. Browser layout to PPT coordinate mapping
+
+**Problem:** HTML/CSS layout does not directly provide PPT coordinates.
+
+**Cause:** CSS layout is resolved by the browser after applying cascade, inheritance, layout algorithms, font metrics, transforms, and viewport rules.
+
+**Required input:**
+
+- rendered page viewport size
+- DOM node identity
+- `getBoundingClientRect()` output
+- `getComputedStyle()` output
+- device pixel ratio
+- target slide size
+
+**Expected output:**
+
+- measured visual node with normalized bbox
+- slide-space coordinates
+- source DOM path
+- computed style snapshot
+
+**Reuse candidate:**
+
+- `dom-to-pptx`
+- custom Playwright extractor
+
+**Implementation task:**
+
+Create `src/extract` module that returns measured visual nodes from a rendered page.
+
+**Validation:**
+
+- bbox values must map to slide coordinates deterministically;
+- source screenshot and debug overlay must align within a configured tolerance;
+- every extracted node must preserve source DOM identity.
+
+**Non-goal:**
+
+- Do not implement a custom CSS layout engine.
+- Do not support multiple responsive breakpoints in the first validated path.
+
+### 2. DOM tree to Visual Object IR normalization
+
+**Problem:** DOM nodes do not map 1:1 to PowerPoint objects.
+
+**Cause:** HTML contains layout wrappers, framework containers, pseudo-visual nodes, semantic tags, and nested structures that may not correspond to editable PPT objects.
+
+**Required input:**
+
+- measured visual nodes
+- DOM parent/child relationships
+- computed visual styles
+- visibility and opacity
+- z-order hints
+- text/image/table/chart candidates
+
+**Expected output:**
+
+- Visual Object IR nodes
+- stable object IDs
+- parent/child grouping
+- semantic candidate type
+- mapping confidence
+
+**Reuse candidate:**
+
+- `dom-to-pptx` renderQueue pattern
+- `opendataloader-pdf` contentElement schema pattern
+- Docling / Unstructured element models
+
+**Implementation task:**
+
+Create `src/ir/schema.ts` and a normalizer that converts measured DOM nodes into typed IR objects.
+
+**Validation:**
+
+- layout-only wrappers should not become unnecessary PPT objects;
+- visible backgrounds/borders/text/images/tables should become explicit IR candidates;
+- the IR must be serializable to JSON.
+
+**Non-goal:**
+
+- Do not guarantee every DOM node is preserved as a PPT object.
+- Do not infer full authoring intent from arbitrary class names.
+
+### 3. HTML text subtree to PPT rich text runs
+
+**Problem:** Browser text and PPT text use different layout and rich text models.
+
+**Cause:** HTML text may be split across text nodes, spans, inline styles, links, strong/em tags, nested elements, and CSS inheritance. PPT expects text boxes and runs with explicit options.
+
+**Required input:**
+
+- text DOM subtree
+- text node order
+- inherited computed style
+- inline formatting
+- hyperlinks
+- line-height / letter-spacing / white-space signals
+
+**Expected output:**
+
+- editable text IR node
+- ordered rich text runs
+- paragraph boundaries
+- optional line boxes
+- text fallback risk score
+
+**Reuse candidate:**
+
+- `dom-to-pptx` text part collection
+- `html2pptxgenjs`
+- PptxGenJS rich text API
+
+**Implementation task:**
+
+Create a text run collector that converts DOM text subtrees into editable PPT text runs.
+
+**Validation:**
+
+- bold/italic/underline/color/font-size changes must survive in run output;
+- text order must match rendered reading order;
+- text must remain editable in generated PPTX.
+
+**Non-goal:**
+
+- Do not guarantee browser-identical automatic line wrapping in the first version.
+- Do not use OCR when DOM text is available.
+
+### 4. CSS visual style to PPT shape mapping
+
+**Problem:** CSS visual styles and PPT shape options are not the same model.
+
+**Cause:** CSS supports backgrounds, borders, radii, shadows, gradients, filters, masks, blend modes, and clipping. PPT supports only a subset as stable native objects.
+
+**Required input:**
+
+- computed background
+- border properties
+- border radius
+- box shadow
+- opacity
+- transform
+- clipping and overflow signals
+
+**Expected output:**
+
+- shape IR node
+- PPT shape mapping options
+- unsupported-style flags
+- fallback risk score
+
+**Reuse candidate:**
+
+- `dom-to-pptx` background/border/radius/shadow mapping
+- PptxGenJS shape API
+
+**Implementation task:**
+
+Create a style mapper that converts safe CSS visual styles into PPT shape options and marks unsupported effects explicitly.
+
+**Validation:**
+
+- simple backgrounds, borders, radii, and outer shadows must map to native PPT shapes;
+- unsupported effects must be recorded in the validation report;
+- complex effects must not silently disappear.
+
+**Non-goal:**
+
+- Do not implement full CSS feature parity.
+- Do not require native PPT reconstruction for `backdrop-filter`, complex masks, or blend modes.
+
+### 5. Semantic HTML table and fake table detection
+
+**Problem:** HTML tables and visually table-like layouts need different extraction paths.
+
+**Cause:** Semantic tables use `table`, `tr`, `td`, and `th`, while fake tables are often `div` or CSS grid layouts with aligned cells but no table semantics.
+
+**Required input:**
+
+- semantic table DOM subtree
+- measured bbox clusters
+- row/column alignment data
+- cell text and styles
+- span information if available
+
+**Expected output:**
+
+- table IR node
+- row and cell IR nodes
+- rowSpan / colSpan where known
+- cell text and style mapping
+- table confidence score
+
+**Reuse candidate:**
+
+- `dom-to-pptx` semantic table extractor
+- PptxGenJS table utilities
+- `opendataloader-pdf` table row/cell/span model
+- `table-transformer` and deterministic bbox clustering for fake tables
+
+**Implementation task:**
+
+Create a semantic table extractor first, then add fake table detection using bbox clustering.
+
+**Validation:**
+
+- semantic HTML tables must become native PPT tables;
+- fake table candidates must include a confidence score;
+- low-confidence fake tables must not be forced into invalid PPT tables.
+
+**Non-goal:**
+
+- Do not treat every grid layout as a table.
+- Do not require ML-based fake table detection in the first implementation.
+
+### 6. Image, SVG, icon, GIF, and video asset mapping
+
+**Problem:** Non-text media must be preserved without blocking editability of surrounding objects.
+
+**Cause:** Images and media are already asset-like, while SVGs may contain editable vector structure, chart semantics, icons, or complex styling.
+
+**Required input:**
+
+- image source URL or data URI
+- SVG source
+- CSS background-image
+- object-fit / object-position
+- media bbox
+- alt text or accessible name
+- z-order
+
+**Expected output:**
+
+- image asset IR node
+- SVG asset IR node
+- video thumbnail or asset reference
+- crop and placement metadata
+- alt text metadata
+
+**Reuse candidate:**
+
+- `dom-to-pptx` image/SVG asset mapper
+- PptxGenJS image utilities
+- `opendataloader-pdf` image metadata pattern
+
+**Implementation task:**
+
+Create an asset mapper that preserves media placement and metadata while keeping nearby text/shapes editable.
+
+**Validation:**
+
+- images must be placed with correct bbox;
+- crop behavior must be explicit;
+- alt text should be preserved when available;
+- media fallback must be recorded.
+
+**Non-goal:**
+
+- Do not convert video into editable timeline objects.
+- Do not require GIF frame-level editing.
+- Do not treat every SVG as a chart.
+
+### 7. Chart semantic extraction and native PPT chart mapping
+
+**Problem:** Charts are visually rendered objects, but native PPT charts require structured data.
+
+**Cause:** Chart libraries may render as SVG, canvas, HTML, or images. The visual output often does not expose the original data series, axes, scales, or legend mappings in a consistent way.
+
+**Required input:**
+
+- chart DOM region
+- chart library hints
+- SVG nodes if present
+- canvas source hooks if available
+- axis labels
+- legend labels
+- extracted data series when recoverable
+
+**Expected output:**
+
+- chartCandidate IR node
+- chart type
+- categories / x values
+- series data
+- axis metadata
+- confidence score
+- fallback reason if semantic recovery fails
+
+**Reuse candidate:**
+
+- ChartDetective
+- extract-line-chart-data
+- LineFormer
+- ChartReader
+- svgdigitizer
+- PptxGenJS chart API
+
+**Implementation task:**
+
+Start with chart library source-data adapters, then add SVG chart parsing for selected chart types.
+
+**Validation:**
+
+- recovered chart data must round-trip into a native PPT chart;
+- chart confidence must be recorded;
+- low-confidence charts must remain asset-backed rather than producing misleading editable charts.
+
+**Non-goal:**
+
+- Do not solve arbitrary canvas chart reconstruction without source data.
+- Do not guarantee native PPT chart recovery for all SVG charts.
+
+### 8. Native object versus fallback policy
+
+**Problem:** The converter must decide when to preserve editability and when to use fallback assets.
+
+**Cause:** Some CSS effects, media, charts, and complex containers cannot be represented faithfully as stable native PPT objects.
+
+**Required input:**
+
+- Visual Object IR
+- unsupported-style flags
+- semantic confidence scores
+- rendered HTML screenshot
+- rendered PPTX screenshot
+- diff results
+
+**Expected output:**
+
+- fallback decision per object or region
+- fallback reason
+- editability score
+- visual mismatch score
+- validation report
+
+**Reuse candidate:**
+
+- pixelmatch
+- looks-same
+- odiff
+- BackstopJS
+- Visual Regression Tracker
+
+**Implementation task:**
+
+Create a fallback policy engine that records native-object, partial-native, and asset-backed decisions explicitly.
+
+**Validation:**
+
+- every fallback must have a reason;
+- generated PPTX must be rendered and compared against the source screenshot;
+- validation report must include mismatch and editability scores.
+
+**Non-goal:**
+
+- Do not build a full visual regression platform before a local validator works.
+- Do not let fallback decisions happen silently.
+
+### 9. Output generation and validation backend
+
+**Problem:** The IR must become a PPTX file that can be inspected and validated.
+
+**Cause:** Mapping IR to PPTX is only useful if the resulting file is renderable, editable, and testable.
+
+**Required input:**
+
+- Visual Object IR
+- PPT mapping decisions
+- assets
+- target slide size
+- validation configuration
+
+**Expected output:**
+
+- PPTX file
+- debug JSON
+- optional debug HTML overlay
+- rendered PPTX screenshot
+- validation report
+
+**Reuse candidate:**
+
+- PptxGenJS
+- existing slide rendering and validation tools
+- visual diff tools
+
+**Implementation task:**
+
+Create a PPTX compiler and validation wrapper that can be run in CI or Codex Web.
+
+**Validation:**
+
+- output PPTX must open and render;
+- important text objects must remain editable;
+- validation artifacts must be written to disk.
+
+**Non-goal:**
+
+- Do not optimize for batch throughput until the single-page path is stable.
+
+### 10. Deletion candidate tracking
+
+**Problem:** Removing code or dependencies is risky because reconstruction is expensive.
+
+**Cause:** A module may look unused before the IR, mapper, or validator has enough context to prove it is unnecessary.
+
+**Required input:**
+
+- reuse report
+- module ownership map
+- dependency graph
+- failed validation records
+- duplicate functionality records
+
+**Expected output:**
+
+- `docs/deletion_candidates.md`
+- reason for deletion candidate status
+- evidence required before deletion
+- owner module affected by deletion
+
+**Reuse candidate:**
+
+- agent skill references
+- repository reuse report
+- validation reports
+
+**Implementation task:**
+
+Create a deletion candidate document before deleting or replacing modules.
+
+**Validation:**
+
+- every deletion candidate must include evidence;
+- no project dependency should be removed without a documented replacement or non-use proof.
+
+**Non-goal:**
+
+- Do not delete uncertain modules during bootstrap.
+- Do not optimize dependency count before reuse analysis is complete.
