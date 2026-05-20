@@ -1,0 +1,39 @@
+[workspace]
+root = "third_party/repos"
+clone_depth = 1
+
+[[repositories]]
+id = "docling"
+full_name = "docling-project/docling"
+category = "visual_object_ir_normalizer"
+priority = 2
+
+[[repositories]]
+id = "unstructured"
+full_name = "Unstructured-IO/unstructured"
+category = "visual_object_ir_normalizer"
+priority = 2
+
+[[repositories]]
+id = "layout_parser"
+full_name = "Layout-Parser/layout-parser"
+category = "visual_object_ir_normalizer"
+priority = 3
+
+[[repositories]]
+id = "surya"
+full_name = "datalab-to/surya"
+category = "visual_object_ir_normalizer_fake_table_detector"
+priority = 2
+
+[[repositories]]
+id = "marker"
+full_name = "datalab-to/marker"
+category = "visual_object_ir_normalizer"
+priority = 3
+
+[[repositories]]
+id = "mineru"
+full_name = "opendatalab/MinerU"
+category = "visual_object_ir_normalizer_fake_table_detector"
+priority = 3
