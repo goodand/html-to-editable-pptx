@@ -1,0 +1,27 @@
+[workspace]
+root = "third_party/repos"
+clone_depth = 1
+
+[[repositories]]
+id = "extract_line_chart_data"
+full_name = "tdsone/extract-line-chart-data"
+category = "chart_semantic_extractor"
+priority = 2
+
+[[repositories]]
+id = "lineformer"
+full_name = "TheJaeLal/LineFormer"
+category = "chart_semantic_extractor"
+priority = 2
+
+[[repositories]]
+id = "chartreader"
+full_name = "Cvrane/ChartReader"
+category = "chart_semantic_extractor"
+priority = 3
+
+[[repositories]]
+id = "svgdigitizer"
+full_name = "echemdb/svgdigitizer"
+category = "chart_semantic_extractor"
+priority = 3
