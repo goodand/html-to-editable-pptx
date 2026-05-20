@@ -22,6 +22,6 @@ priority = 2
 
 [[repositories]]
 id = "odiff"
-full_name = "dandavison/odiff"
+full_name = "dmtrKovalenko/odiff"
 category = "fallback_policy_engine_validation"
 priority = 2
