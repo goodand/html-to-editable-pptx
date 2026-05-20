@@ -4,6 +4,12 @@ Editability-first HTML to PPTX parser project.
 
 The goal is to convert rendered HTML into **editable PowerPoint objects** by combining browser layout extraction, a Visual Object IR, semantic object detection, and PPTX object mapping.
 
+For the concrete problem definition, reusable module slots, and `opendataloader-pdf` module mapping, read:
+
+```text
+docs/GOAL_PROBLEM.md
+```
+
 This is not a screenshot-first exporter. Visual fidelity matters, but the primary target is editability.
 
 ## Core priority
@@ -83,6 +89,7 @@ third_party/manifests/table_detection.toml
 third_party/manifests/chart_extraction.toml
 third_party/manifests/visual_validation.toml
 third_party/manifests/reference_repos.toml
+third_party/manifests/agent_skills.toml
 ```
 
 The default manifest contains the highest-priority seed repositories:
@@ -95,7 +102,7 @@ The default manifest contains the highest-priority seed repositories:
 | visual diff | `mapbox/pixelmatch` |
 | PPTX backend | `gitbrent/PptxGenJS` |
 
-Additional manifests add document layout, table recognition, chart extraction, visual validation, and reference parser candidates.
+Additional manifests add document layout, table recognition, chart extraction, visual validation, reference parser candidates, and agent skill references.
 
 ## Clone third-party repositories
 
@@ -130,6 +137,7 @@ If partial clone fails, it retries with a normal shallow clone.
 
 ```text
 README.md
+docs/GOAL_PROBLEM.md
 scripts/clone_repos.sh
 scripts/clone_repos_from_toml.py
 third_party/repositories.toml
