@@ -1,0 +1,21 @@
+[workspace]
+root = "third_party/repos"
+clone_depth = 1
+
+[[repositories]]
+id = "agentskillos"
+full_name = "ynulihao/AgentSkillOS"
+category = "agent_skill_orchestration_reference"
+priority = 2
+
+[[repositories]]
+id = "swe_skills_bench"
+full_name = "GeniusHTX/SWE-Skills-Bench"
+category = "agent_skill_benchmark_reference"
+priority = 2
+
+[[repositories]]
+id = "skill_usage"
+full_name = "UCSB-NLP-Chang/Skill-Usage"
+category = "agent_skill_retrieval_reference"
+priority = 3
