@@ -1,0 +1,33 @@
+[workspace]
+root = "third_party/repos"
+clone_depth = 1
+
+[[repositories]]
+id = "dom_to_pptx"
+full_name = "atharva9167j/dom-to-pptx"
+category = "visual_object_ir_normalizer"
+priority = 1
+
+[[repositories]]
+id = "table_transformer"
+full_name = "microsoft/table-transformer"
+category = "fake_table_detector"
+priority = 1
+
+[[repositories]]
+id = "chartdetective"
+full_name = "m-damien/ChartDetective"
+category = "chart_semantic_extractor"
+priority = 1
+
+[[repositories]]
+id = "pixelmatch"
+full_name = "mapbox/pixelmatch"
+category = "fallback_validation"
+priority = 1
+
+[[repositories]]
+id = "pptxgenjs"
+full_name = "gitbrent/PptxGenJS"
+category = "pptx_output_backend"
+priority = 1
