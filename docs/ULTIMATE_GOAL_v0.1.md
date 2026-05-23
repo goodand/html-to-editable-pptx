@@ -53,13 +53,13 @@ Five concrete commitments follow from the ultimate goal:
    The output must look like something the user already recognizes — a PPT slide. New visual conventions raise the evaluation cost and defeat the goal.
 
 2. **Operable surface**
-   The artifact's visible elements must be directly modifiable through the standard UI actions of the user's familiar tool. Without operation, evaluation degrades to mere viewing — closer to reading text than to direct evaluation. The specific scope of which elements must be operable, and at what granularity, is the responsibility of `GOAL_PROBLEM.md` and `reuse_report.md`, not this document.
+   The artifact's visible elements must be directly modifiable through the standard UI actions of the user's familiar tool. Without operation, evaluation degrades to mere viewing — closer to reading text than to direct evaluation. The specific scope of which elements must be operable, and at what granularity, is the responsibility of `GOAL_PROBLEM_v0.1.md` and `reuse_report_v0.1.md`, not this document.
 
 3. **Honest fallback marking**
    When part of the artifact cannot be made operable, it must be **explicitly marked** as such. A surface that *looks* operable but is not is worse than no operability at all, because it breaks evaluation in a hidden way.
 
 4. **Agent-side pre-evaluation**
-   The system must produce some form of self-assessment **before** the user evaluates. This is not a substitute for user evaluation; it is a courtesy that lets the user know what is worth their attention. The specific content of this self-assessment — what is measured, what is reported — is defined in `GOAL_PROBLEM.md`, not this document.
+   The system must produce some form of self-assessment **before** the user evaluates. This is not a substitute for user evaluation; it is a courtesy that lets the user know what is worth their attention. The specific content of this self-assessment — what is measured, what is reported — is defined in `GOAL_PROBLEM_v0.1.md`, not this document.
 
 5. **No commitment to PPTX richness**
    The system does not commit to supporting PPTX animations, masters, transitions, or other advanced features. PPTX is a container, not a target.
@@ -114,9 +114,9 @@ The loop closes only because (3) is in place. Remove (3) and the user has nothin
 
 When reading other project documents:
 
-- `GOAL_PROBLEM.md` defines the **problem statement and slot structure** — the technical decomposition of the work needed to reach this ultimate goal.
+- `GOAL_PROBLEM_v0.1.md` defines the **problem statement and slot structure** — the technical decomposition of the work needed to reach this ultimate goal.
 - `architecture_v0.1.md` defines the **pipeline shape** — the modules and their connections.
-- `reuse_report.md` defines **which external code helps reach the goal** with the least new construction.
+- `reuse_report_v0.1.md` defines **which external code helps reach the goal** with the least new construction.
 - `reuse_triage_task_A.md` defines **the parallel shallow triage** for non-P1 candidates.
 - `TASK.md` defines **the next concrete actions** — what is to be done now to make progress on the means above.
 
@@ -138,7 +138,7 @@ The following YAML block is a derivative index of the prose above, intended for 
 # If this YAML conflicts with the prose, the prose wins and this block must be re-derived.
 
 document:
-  name: ULTIMATE_GOAL.md
+  name: ULTIMATE_GOAL_v0.1.md
   authority: consensus_repository  # not authority document
   modification_rule: user_consent_required
   graph_position: highest_abstraction_node  # not single top authority
@@ -171,12 +171,12 @@ commitments:
     name: familiar_visual_form
   - id: C2
     name: operable_surface
-    scope_delegated_to: [GOAL_PROBLEM.md, reuse_report.md]
+    scope_delegated_to: [GOAL_PROBLEM_v0.1.md, reuse_report_v0.1.md]
   - id: C3
     name: honest_fallback_marking
   - id: C4
     name: agent_side_pre_evaluation
-    content_delegated_to: [GOAL_PROBLEM.md]
+    content_delegated_to: [GOAL_PROBLEM_v0.1.md]
   - id: C5
     name: no_commitment_to_pptx_richness
 
@@ -189,9 +189,9 @@ non_commitments:
   - maximizing_pptx_feature_usage
 
 related_documents:
-  GOAL_PROBLEM.md: problem_statement_and_slot_structure
+  GOAL_PROBLEM_v0.1.md: problem_statement_and_slot_structure
   architecture_v0.1.md: pipeline_shape
-  reuse_report.md: external_code_selection
+  reuse_report_v0.1.md: external_code_selection
   reuse_triage_task_A.md: shallow_triage_for_non_p1
   TASK.md: next_concrete_actions
 ```
@@ -200,7 +200,7 @@ related_documents:
 
 This document is a v0.1 statement of the ultimate goal. The following questions remain open and should be resolved by future interviews, then reflected in this document:
 
-- **UQ-1**: Of the operations available to the user, which are *essential* for (3) evaluation to function as an enabler? Are all operations equivalent for evaluation, or are some (e.g., text editing) more essential than others (e.g., color change)? The concrete enumeration of operations is the responsibility of `GOAL_PROBLEM.md`; this question concerns only the *upper principle* of which operation classes the ultimate goal depends on.
+- **UQ-1**: Of the operations available to the user, which are *essential* for (3) evaluation to function as an enabler? Are all operations equivalent for evaluation, or are some (e.g., text editing) more essential than others (e.g., color change)? The concrete enumeration of operations is the responsibility of `GOAL_PROBLEM_v0.1.md`; this question concerns only the *upper principle* of which operation classes the ultimate goal depends on.
 - **UQ-2**: Is there a class of LLM-generated content where evaluation is *not* the goal (e.g., the user wants a one-shot delivery without evaluation)? If so, is that out of scope, or a different mode?
 - **UQ-3**: Does "familiar visual form" extend beyond PPT proportions and style? Would other familiar forms (A4 document, mobile screen) qualify in future versions?
 - **UQ-4**: When the self-assessment and the user's evaluation disagree, which is treated as authoritative?

@@ -2,7 +2,7 @@
 
 > **Scope contract**: This document is the B안 deliverable. It evaluates P1 candidates **at code level** using a Level-2 critical-path trace, combining two complementary lenses per repo: criterion X (the library's representative path) and criterion Y (back-tracing from our slot's requirements). The shallow triage of all 27 repos is delegated to a separate session — see `docs/reuse_triage_task_A.md`.
 >
-> **Reading order**: Each P1 section follows a 7-part format derived from `docs/GOAL_PROBLEM.md` §8, extended with explicit X-findings and Y-findings blocks. Adopt/discard decisions stated here are evidence-backed and override the broader triage in case of conflict.
+> **Reading order**: Each P1 section follows a 7-part format derived from `docs/GOAL_PROBLEM_v0.1.md` §8, extended with explicit X-findings and Y-findings blocks. Adopt/discard decisions stated here are evidence-backed and override the broader triage in case of conflict.
 
 ---
 
@@ -123,7 +123,7 @@ The adopt decision is verified by re-checking these invariants when `src/validat
 
 ### 8. Non-goals
 
-Following GOAL_PROBLEM.md's non-goal categorization:
+Following GOAL_PROBLEM_v0.1.md's non-goal categorization:
 
 - **Case: Type** — Do not build a perceptual similarity metric beyond what pixelmatch provides. Do not extend pixelmatch internals (the library is small enough to fork, but forking creates a maintenance burden that violates *"reuse existing modules > write new code"*).
 - **Case: State** — Adopt does not mean "no replacement ever". If LibreOffice rendering introduces systematic anti-aliasing differences that pixelmatch's detector cannot tolerate, we evaluate `looks-same` (P2, same slot) before forking.
@@ -154,7 +154,7 @@ These questions are intentionally **not** answered here. They are recorded for `
 
 ### 1. Problem
 
-The IR must become an actual `.pptx` file that PowerPoint, Keynote, and LibreOffice will open and present as editable objects. Without a backend, the IR is unobservable and success criteria 1-5 of GOAL_PROBLEM.md cannot be validated.
+The IR must become an actual `.pptx` file that PowerPoint, Keynote, and LibreOffice will open and present as editable objects. Without a backend, the IR is unobservable and success criteria 1-5 of GOAL_PROBLEM_v0.1.md cannot be validated.
 
 ### 2. Cause
 
@@ -209,7 +209,7 @@ The unit system is fixed: EMU at 914400 per inch (`core-enums.ts:9`). Our extrac
 
 #### 5.2. Y-findings (back-tracing from our slot)
 
-The IR-to-PPT mapping decisions from §5-§6 of GOAL_PROBLEM.md determine which pptxgenjs surface we use. Our 12 IR types map to pptxgenjs as follows:
+The IR-to-PPT mapping decisions from §5-§6 of GOAL_PROBLEM_v0.1.md determine which pptxgenjs surface we use. Our 12 IR types map to pptxgenjs as follows:
 
 | IR type | pptxgenjs API | Editability preserved? |
 |---|---|---|
@@ -227,7 +227,7 @@ The IR-to-PPT mapping decisions from §5-§6 of GOAL_PROBLEM.md determine which 
 
 **Critical Y-finding — no group object**: pptxgenjs has no `addGroup()` method. CSS visual hierarchy (a card with header + body + footer that the user expects to move as one unit in PowerPoint) cannot be preserved. Each child element becomes an independent slide object. This is a documented limitation, not an oversight.
 
-> Mitigation: GOAL_PROBLEM.md §2 already accepts that "layout-only wrappers should not become unnecessary PPT objects." The IR normalizer flattens groups before reaching pptxgenjs; group identity is recorded in IR metadata only.
+> Mitigation: GOAL_PROBLEM_v0.1.md §2 already accepts that "layout-only wrappers should not become unnecessary PPT objects." The IR normalizer flattens groups before reaching pptxgenjs; group identity is recorded in IR metadata only.
 
 **Second Y-finding — shape type vocabulary is fixed**: `ShapeType` enum (`core-enums.ts`) defines a closed set of PowerPoint-native shape names (`rect`, `roundRect`, `ellipse`, etc.). Arbitrary CSS shapes (e.g. `border-radius: 30% 70% 70% 30% / 60% 40% 60% 40%`) cannot be expressed natively — they fall back to either an SVG asset or a `customGeometry` if pptxgenjs supports it. Quick check at `core-interfaces.ts:611` shows `ShapeProps` does not expose custom path geometry → **custom CSS clip-paths must fall back to SVG asset**.
 
@@ -287,7 +287,7 @@ The translator is a deterministic dispatch table — given an IR node, look up i
 
 ### 1. Problem
 
-Six of the eight required reusable module slots are nominally filled by this one repository (per `GOAL_PROBLEM.md` §"Required reusable module slots"). If `dom_to_pptx` is adopted naively as a runtime dependency, the entire pipeline becomes a thin wrapper around it — and we inherit its architectural decisions wholesale, including `html2canvas`-based rasterization. If it is rejected, six slots need new implementations. The correct posture lies between these extremes.
+Six of the eight required reusable module slots are nominally filled by this one repository (per `GOAL_PROBLEM_v0.1.md` §"Required reusable module slots"). If `dom_to_pptx` is adopted naively as a runtime dependency, the entire pipeline becomes a thin wrapper around it — and we inherit its architectural decisions wholesale, including `html2canvas`-based rasterization. If it is rejected, six slots need new implementations. The correct posture lies between these extremes.
 
 ### 2. Cause
 
@@ -295,7 +295,7 @@ Six of the eight required reusable module slots are nominally filled by this one
 
 1. **It runs in a browser, not Node.** All `window` / `document` references are real-DOM; Playwright provides the DOM, but `dom_to_pptx` is not packaged as a Playwright-injectable module.
 2. **It bundles `pptxgenjs ^3.12.0`** as a runtime dep, while we adopt v4.0.1 directly in P1.2. Importing `dom_to_pptx` pulls a second pptxgenjs major version into the dependency tree.
-3. **It includes `html2canvas`** — a rasterization tool. Adopting wholesale means accepting rasterization as a primary path, in direct conflict with our editability-first priority (GOAL_PROBLEM.md headline).
+3. **It includes `html2canvas`** — a rasterization tool. Adopting wholesale means accepting rasterization as a primary path, in direct conflict with our editability-first priority (GOAL_PROBLEM_v0.1.md headline).
 
 ### 3. Required input (per slot it touches)
 
@@ -337,7 +337,7 @@ exportToPptx(target)
   → return Blob
 ```
 
-**`prepareRenderItem` is exactly the renderQueue pattern** GOAL_PROBLEM.md cites for Slot 2 — it takes a DOM node + computed style + z-index and returns an array of typed render items (`{ type: 'text', zIndex, domOrder, ... }`). This is the strongest single reuse signal in the entire repo.
+**`prepareRenderItem` is exactly the renderQueue pattern** GOAL_PROBLEM_v0.1.md cites for Slot 2 — it takes a DOM node + computed style + z-index and returns an array of typed render items (`{ type: 'text', zIndex, domOrder, ... }`). This is the strongest single reuse signal in the entire repo.
 
 **`collectTextParts` (95 lines)** handles: hyperlink inheritance (`<a>` ancestors), `::before` CSS content (icon fonts), whitespace normalization, child recursion. This is exactly Slot 3's deliverable.
 
@@ -436,7 +436,7 @@ Charts in HTML are rendered as SVG, canvas, or images. Native PPT charts require
 
 ### 2. Cause
 
-Most chart libraries (D3, Chart.js, ECharts, Plotly) emit SVG marks or canvas rasters without exposing the source data series in the DOM. ChartDetective is the most cited tool for **vector chart extraction** because it parses SVG path commands and clusters them into series. The chart_semantic_extractor slot in GOAL_PROBLEM.md §7 lists ChartDetective as one of several candidates.
+Most chart libraries (D3, Chart.js, ECharts, Plotly) emit SVG marks or canvas rasters without exposing the source data series in the DOM. ChartDetective is the most cited tool for **vector chart extraction** because it parses SVG path commands and clusters them into series. The chart_semantic_extractor slot in GOAL_PROBLEM_v0.1.md §7 lists ChartDetective as one of several candidates.
 
 ### 3. Required input
 
@@ -486,7 +486,7 @@ What can be reused:
 | Data structure (mark / axis / series typing) | **Yes** | TypeScript interfaces are pure types |
 | The CHI'23 paper itself | **Yes** | Algorithm description, citable as a reference |
 
-**Critical Y-finding — the slot's success criterion is met by the asset-backed fallback path.** GOAL_PROBLEM.md §7's non-goals state:
+**Critical Y-finding — the slot's success criterion is met by the asset-backed fallback path.** GOAL_PROBLEM_v0.1.md §7's non-goals state:
 
 > "Do not solve arbitrary canvas chart reconstruction without source data."
 > "Do not guarantee native PPT chart recovery for all SVG charts."
@@ -644,7 +644,7 @@ And our CLI should expose at least: `validate reference`, `validate test`, `vali
 - **Case: State** — Do not commit to BackstopJS's full feature set. We borrow workflow, not framework.
 - **Case: Type** — Do not adopt `node-resemble-js`. The comparator decision is closed (pixelmatch, P1.1).
 - **Case: Type** — Do not implement multi-engine support (BackstopJS supports both Playwright and Puppeteer; we use Playwright only).
-- **Case: Performance: Over** — Do not build a full visual regression platform (GOAL_PROBLEM.md §8 explicit non-goal).
+- **Case: Performance: Over** — Do not build a full visual regression platform (GOAL_PROBLEM_v0.1.md §8 explicit non-goal).
 
 ### 9. Open questions
 
@@ -671,7 +671,7 @@ HTML pages frequently use `<div>` + CSS Grid or Flexbox to render visually table
 
 ### 2. Cause
 
-Semantic `<table>` detection is handled by `dom_to_pptx`'s `extractTableData` (Slot 5a, P1.3). Fake tables — visually aligned grids without table semantics — are a separate problem. GOAL_PROBLEM.md §5 lists deterministic bbox clustering as the primary approach for bootstrap, with ML detection as a later option. Table Transformer is the ML option.
+Semantic `<table>` detection is handled by `dom_to_pptx`'s `extractTableData` (Slot 5a, P1.3). Fake tables — visually aligned grids without table semantics — are a separate problem. GOAL_PROBLEM_v0.1.md §5 lists deterministic bbox clustering as the primary approach for bootstrap, with ML detection as a later option. Table Transformer is the ML option.
 
 ### 3. Required input
 
@@ -712,7 +712,7 @@ The slot can be served by two distinct approaches:
 
 | Approach | Source | Fit for bootstrap |
 |---|---|---|
-| Deterministic bbox clustering | our own code, inspired by `opendataloader-pdf` table processors | **Yes** — explicit recommendation in GOAL_PROBLEM.md §5 non-goal *"start with deterministic bbox clustering before ML-based detection"* |
+| Deterministic bbox clustering | our own code, inspired by `opendataloader-pdf` table processors | **Yes** — explicit recommendation in GOAL_PROBLEM_v0.1.md §5 non-goal *"start with deterministic bbox clustering before ML-based detection"* |
 | ML-based image detection | Table Transformer (Python) | No for bootstrap |
 
 The non-goal text is decisive: **deterministic bbox clustering is the bootstrap path; ML is deferred.** Table Transformer cannot meaningfully participate in bootstrap.
@@ -737,7 +737,7 @@ The clustering algorithm draws from:
 
 - `opendataloader-pdf`'s `ClusterTableProcessor` (Java, design reference)
 - bbox alignment: nodes share a column if their `x` and `width` cluster within a tolerance
-- text alignment consistency, consistent gap detection, border/background pattern repetition (signals from GOAL_PROBLEM.md §5)
+- text alignment consistency, consistent gap detection, border/background pattern repetition (signals from GOAL_PROBLEM_v0.1.md §5)
 
 #### 6.2. Deferred (post-bootstrap)
 
@@ -785,13 +785,13 @@ When deterministic clustering lands:
 
 **The dom_to_pptx finding is the most significant**: its six-slot concentration translates into six pure-function transplants, not a single dependency. The transplantation strategy avoids both extremes (don't depend on the whole thing, don't reinvent six wheels).
 
-**Two slots are intentionally underserved in bootstrap**: `chart_semantic_extractor` and `fake_table_detector`. Their P1 candidates are not viable for Node bootstrap, and GOAL_PROBLEM.md's non-goals explicitly accept this state (Performance: Null, Performance: Under).
+**Two slots are intentionally underserved in bootstrap**: `chart_semantic_extractor` and `fake_table_detector`. Their P1 candidates are not viable for Node bootstrap, and GOAL_PROBLEM_v0.1.md's non-goals explicitly accept this state (Performance: Null, Performance: Under).
 
 ---
 
 ## Cross-cutting open questions for downstream sessions
 
 - **CQ-1** (architecture.md): What is the exact boundary between Playwright `page.evaluate` (browser-side) and Node-side processing? The dom_to_pptx transplant decision (P1.3 Q-d2p-1) is the forcing function.
-- **CQ-2** (architecture.md): IR schema must accommodate all 12 minimum types (GOAL_PROBLEM.md §"Visual Object IR requirements") *and* the confidence/fallback metadata implied by P1.1, P1.4, P1.6.
+- **CQ-2** (architecture.md): IR schema must accommodate all 12 minimum types (GOAL_PROBLEM_v0.1.md §"Visual Object IR requirements") *and* the confidence/fallback metadata implied by P1.1, P1.4, P1.6.
 - **CQ-3** (deletion_candidates.md): Should `dom_to_pptx` be removed from `third_party/repositories.toml` after the transplant lands, given it shifts from "P1 adopt" to "reference + attribution"? Manifest semantics decision.
 - **CQ-4** (reuse_triage_task_A.md): P2/P3 candidates (`html2pptxgenjs`, `surya`, `extract-line-chart-data`, `looks-same`, etc.) need shallow triage to confirm none of them invalidate a P1 adopt decision above.

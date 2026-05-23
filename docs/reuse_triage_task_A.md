@@ -10,19 +10,19 @@
 | 산출물 위치 | `docs/reuse_triage.md` |
 | 산출물 형식 | 결정 테이블 (Markdown) |
 | 예상 분량 | 1~2일, 전체 문서 5~10페이지 |
-| 본 세션 산출물 | `docs/reuse_report.md` (B안, 별도) — 본 세션의 책임 |
+| 본 세션 산출물 | `docs/reuse_report_v0.1.md` (B안, 별도) — 본 세션의 책임 |
 
 ## 2. 작업의 위치 (where this fits)
 
 `html-to-editable-pptx` 프로젝트는 bootstrap 단계이며, `docs/TASK.md`가 지시한 첫 산출물은 세 개입니다:
 
 ```text
-docs/reuse_report.md
+docs/reuse_report_v0.1.md
 docs/architecture.md
 docs/deletion_candidates.md
 ```
 
-`docs/reuse_report.md`는 두 가지 접근이 가능합니다:
+`docs/reuse_report_v0.1.md`는 두 가지 접근이 가능합니다:
 
 - **B안 (Evidence-first, 좁고 깊게)**: P1 후보 6개에만 집중, 코드 인용과 함께 재사용 가능성 검증
 - **A안 (Decision-first, 얕고 넓게)**: 27개 저장소 전부에 대해 *채택 / 참고 / 폐기* 분류
@@ -34,7 +34,7 @@ docs/deletion_candidates.md
 작업을 시작하기 전에 반드시 읽어야 할 파일:
 
 ```text
-docs/GOAL_PROBLEM.md
+docs/GOAL_PROBLEM_v0.1.md
 README.md
 third_party/repositories.toml
 third_party/manifests/*.toml
@@ -51,7 +51,7 @@ third_party/repos/<repo_id>/
 | 결정 항목 | 가능한 값 | 정의 |
 |---|---|---|
 | **decision** | adopt / reference / discard / defer | 그 슬롯에서 이 저장소를 어떻게 다룰지 |
-| **slot_fit** | strong / partial / weak / none | `GOAL_PROBLEM.md`의 슬롯 요구사항과 일치도 |
+| **slot_fit** | strong / partial / weak / none | `GOAL_PROBLEM_v0.1.md`의 슬롯 요구사항과 일치도 |
 | **integration_cost** | low / medium / high / unknown | 통합 비용 추정 (언어/라이선스/의존성 기준) |
 | **risk** | low / medium / high | 채택 시 단일 의존성 리스크 |
 
@@ -72,7 +72,7 @@ third_party/repos/<repo_id>/
 - 주 언어 (저장소 최상위 파일 확장자 기준)
 - 마지막 commit 날짜 (선택사항)
 
-**코드를 읽지 않습니다.** 코드 레벨 분석은 B안(`docs/reuse_report.md`)의 책임입니다. README + 디렉터리 구조 + 라이선스 + 언어만으로 결정하지 못하면 `defer`로 분류합니다.
+**코드를 읽지 않습니다.** 코드 레벨 분석은 B안(`docs/reuse_report_v0.1.md`)의 책임입니다. README + 디렉터리 구조 + 라이선스 + 언어만으로 결정하지 못하면 `defer`로 분류합니다.
 
 ## 5. 산출물 형식
 
@@ -113,7 +113,7 @@ third_party/repos/<repo_id>/
 
 ## 6. 비목표 (non-goals)
 
-GOAL_PROBLEM.md의 non-goal 카테고리 형식을 따릅니다.
+GOAL_PROBLEM_v0.1.md의 non-goal 카테고리 형식을 따릅니다.
 
 ### Case: Type
 
@@ -159,7 +159,7 @@ A안의 결정이 B안에 미치는 영향:
 ## 9. 시작 지시
 
 1. `third_party/clone_results.json`을 확인하여 27개가 모두 cloned 상태인지 검증
-2. `docs/GOAL_PROBLEM.md`의 8개 슬롯 정의와 non-goal 섹션을 정독
+2. `docs/GOAL_PROBLEM_v0.1.md`의 8개 슬롯 정의와 non-goal 섹션을 정독
 3. P1 저장소 6개부터 시작
 4. P2 → P3 순서로 진행
 5. 마지막에 Summary 섹션과 8개 슬롯 커버리지 검증
@@ -167,4 +167,4 @@ A안의 결정이 B안에 미치는 영향:
 
 ## 요청자 노트
 
-이 문서는 B안 세션과 병렬로 실행 가능합니다. 두 산출물(`reuse_report.md`, `reuse_triage.md`)이 모두 작성된 뒤, 다음 단계 작업(`architecture.md`, `deletion_candidates.md`)에서 두 문서를 함께 입력으로 사용합니다.
+이 문서는 B안 세션과 병렬로 실행 가능합니다. 두 산출물(`reuse_report_v0.1.md`, `reuse_triage.md`)이 모두 작성된 뒤, 다음 단계 작업(`architecture.md`, `deletion_candidates.md`)에서 두 문서를 함께 입력으로 사용합니다.
