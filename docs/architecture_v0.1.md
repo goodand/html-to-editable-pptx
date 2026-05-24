@@ -145,6 +145,14 @@ flowchart LR
     ValidationLayer --> IRLayer
 ```
 
+> **Scope note** (per ULTIMATE_GOAL_v0.1.md §5 non-commitment to
+> PPTX richness): "Media Candidate" means a reference to an asset
+> (image, SVG, video thumbnail) or a placeholder, not an editable
+> timeline, animation, or media authoring object. Video is
+> represented as a thumbnail or asset reference; GIFs do not support
+> frame-level editing. This boundary mirrors GOAL_PROBLEM_v0.1.md
+> §"Target conversion policy" non-goals.
+
 ## 4. Reuse blueprint
 
 ```mermaid
