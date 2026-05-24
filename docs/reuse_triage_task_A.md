@@ -156,6 +156,12 @@ A안의 결정이 B안에 미치는 영향:
 
 만약 두 세션의 결론이 충돌하면 **B안(코드 검증 기반)이 우선**합니다. A안은 README 기반의 1차 분류입니다.
 
+이 우선순위는 *reuse analysis decision의 범위 안에서만* 적용됩니다.
+프로젝트의 ultimate goal 또는 다른 추상도 층위의 결정에서 두 세션의
+의견이 갈리는 경우, ULTIMATE_GOAL_v0.1.md §7의 원칙에 따라 fresh
+interview로 해결됩니다 — 어느 한 세션의 결론이 자동으로 우선하지
+않습니다.
+
 ## 9. 시작 지시
 
 1. `third_party/clone_results.json`을 확인하여 27개가 모두 cloned 상태인지 검증
