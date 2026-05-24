@@ -8,9 +8,9 @@ Run:
 
 Then read the cloned repositories and write:
 
-- docs/reuse_report.md
-- docs/architecture.md
-- docs/deletion_candidates.md
+- docs/reuse_report_v0.1.md
+- docs/architecture_v0.1.md
+- docs/deletion_candidates_v0.1.md
 
 Create placeholders:
 

@@ -4,10 +4,17 @@ Editability-first HTML to PPTX parser project.
 
 The goal is to convert rendered HTML into **editable PowerPoint objects** by combining browser layout extraction, a Visual Object IR, semantic object detection, and PPTX object mapping.
 
+For the top-level purpose of the project — what end the technical
+work is intended to serve — read:
+
+```text
+docs/ULTIMATE_GOAL_v0.1.md
+```
+
 For the concrete problem definition, reusable module slots, and `opendataloader-pdf` module mapping, read:
 
 ```text
-docs/GOAL_PROBLEM.md
+docs/GOAL_PROBLEM_v0.1.md
 ```
 
 This is not a screenshot-first exporter. Visual fidelity matters, but the primary target is editability.
@@ -137,7 +144,10 @@ If partial clone fails, it retries with a normal shallow clone.
 
 ```text
 README.md
-docs/GOAL_PROBLEM.md
+docs/ULTIMATE_GOAL_v0.1.md
+docs/GOAL_PROBLEM_v0.1.md
+docs/architecture_v0.1.md
+docs/reuse_report_v0.1.md
 scripts/clone_repos.sh
 scripts/clone_repos_from_toml.py
 third_party/repositories.toml
@@ -152,7 +162,7 @@ After cloning third-party repositories, write a reuse report before implementing
 Expected first outputs:
 
 ```text
-docs/reuse_report.md
+docs/reuse_report_v0.1.md
 docs/architecture.md
 docs/deletion_candidates.md
 ```
