@@ -815,6 +815,14 @@ Create a fallback policy engine that records native-object, partial-native, and 
 
 ### 9. Output generation and validation backend
 
+> **Terminology link**: The "validation report" defined in this
+> section is the concrete form of what ULTIMATE_GOAL_v0.1.md §4-C4
+> calls "agent-side pre-evaluation" or "self-assessment". The two
+> documents use different terms at different abstraction levels:
+> ULTIMATE_GOAL describes the *act* of producing a self-assessment
+> before user evaluation; this document defines its *content*
+> (mismatch score, editability score, fallback reasons, etc.).
+
 **Problem:** The IR must become a PPTX file that can be inspected and validated.
 
 **Cause:** Mapping IR to PPTX is only useful if the resulting file is renderable, editable, and testable.
