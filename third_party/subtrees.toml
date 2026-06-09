@@ -1,0 +1,192 @@
+[workspace]
+root = "third_party/subtrees"
+
+# This manifest records subtree-level decisions. Repo-level discovery remains
+# in third_party/repositories.toml and third_party/manifests/*.toml.
+
+[[subtrees]]
+id = "dom_to_pptx"
+full_name = "atharva9167j/dom-to-pptx"
+upstream_url = "https://github.com/atharva9167j/dom-to-pptx.git"
+upstream_ref = "master"
+source_manifest = "third_party/repositories.toml"
+source_category = "visual_object_ir_normalizer"
+source_priority = 1
+source_path = "."
+subtree_prefix = "third_party/subtrees/dom-to-pptx"
+import_mode = "whole_repo"
+decision = "adopt_subtree"
+requires_entrypoint_review = false
+adapter = ""
+validation_command = "npm test"
+notes = "Adopt whole upstream package boundary; keep runtime core + agent skill bundle as separate responsibilities. bin/cli.js installs the skill bundle and is not the conversion runtime CLI."
+
+[[subtrees]]
+id = "pixelmatch"
+full_name = "mapbox/pixelmatch"
+upstream_url = "https://github.com/mapbox/pixelmatch.git"
+upstream_ref = "main"
+source_manifest = "third_party/repositories.toml"
+source_category = "fallback_validation"
+source_priority = 1
+source_path = "."
+subtree_prefix = "third_party/subtrees/pixelmatch"
+import_mode = "whole_repo"
+decision = "adopt_subtree"
+requires_entrypoint_review = false
+adapter = "src/validate/pixelmatchAdapter.ts"
+validation_command = "npm test"
+notes = "Small single-entry pixel diff library; use subtree if local patching or vendored reproducibility is needed."
+
+[[subtrees]]
+id = "looks_same"
+full_name = "gemini-testing/looks-same"
+upstream_url = "https://github.com/gemini-testing/looks-same.git"
+upstream_ref = "master"
+source_manifest = "third_party/manifests/visual_validation.toml"
+source_category = "fallback_policy_engine_validation"
+source_priority = 2
+source_path = "."
+subtree_prefix = "third_party/subtrees/looks-same"
+import_mode = "whole_repo"
+decision = "adopt_subtree"
+requires_entrypoint_review = false
+adapter = "src/validate/looksSameAdapter.ts"
+validation_command = "npm test"
+notes = "Small Node image comparison package; keep as secondary validation backend candidate."
+
+[[subtrees]]
+id = "odiff_bin"
+full_name = "dmtrKovalenko/odiff"
+upstream_url = "https://github.com/dmtrKovalenko/odiff.git"
+upstream_ref = "main"
+source_manifest = "third_party/manifests/visual_validation.toml"
+source_category = "fallback_policy_engine_validation"
+source_priority = 2
+source_path = "npm_packages/odiff-bin"
+subtree_prefix = "third_party/subtrees/odiff-bin"
+import_mode = "split_subdir"
+decision = "adopt_subtree"
+requires_entrypoint_review = false
+adapter = "src/validate/odiffAdapter.ts"
+validation_command = "npm test"
+notes = "Root is a private monorepo; practical package boundary is npm_packages/odiff-bin."
+
+[[subtrees]]
+id = "opendataloader_pdf_core"
+full_name = "opendataloader-project/opendataloader-pdf"
+upstream_url = "https://github.com/opendataloader-project/opendataloader-pdf.git"
+upstream_ref = "main"
+source_manifest = "third_party/manifests/reference_repos.toml"
+source_category = "semantic_ir_reference"
+source_priority = 2
+source_path = "java/opendataloader-pdf-core"
+subtree_prefix = "third_party/subtrees/opendataloader-pdf-core"
+import_mode = "split_subdir"
+decision = "needs_entrypoint_review"
+requires_entrypoint_review = true
+adapter = ""
+validation_command = "mvn test"
+notes = "Promotable from reference-only: Java core is a better subtree candidate than the Node wrapper, but direct module build/test verification is still required."
+
+[[subtrees]]
+id = "pptxgenjs"
+full_name = "gitbrent/PptxGenJS"
+upstream_url = "https://github.com/gitbrent/PptxGenJS.git"
+upstream_ref = "master"
+source_manifest = "third_party/repositories.toml"
+source_category = "pptx_output_backend"
+source_priority = 1
+source_path = "."
+subtree_prefix = ""
+import_mode = "package_dependency"
+decision = "package_dependency"
+requires_entrypoint_review = false
+adapter = "src/pptx/pptxgenjsAdapter.ts"
+validation_command = ""
+notes = "Large published PPTX backend; use package dependency first and consider subtree only if internal generator patching becomes necessary."
+
+[[subtrees]]
+id = "backstopjs"
+full_name = "garris/BackstopJS"
+upstream_url = "https://github.com/garris/BackstopJS.git"
+upstream_ref = "master"
+source_manifest = "third_party/manifests/visual_validation.toml"
+source_category = "fallback_policy_engine_validation"
+source_priority = 1
+source_path = "."
+subtree_prefix = ""
+import_mode = "package_dependency"
+decision = "package_dependency"
+requires_entrypoint_review = false
+adapter = ""
+validation_command = ""
+notes = "Large config-driven visual regression runner; prefer package or external CLI over source subtree."
+
+[[subtrees]]
+id = "docling"
+full_name = "docling-project/docling"
+upstream_url = "https://github.com/docling-project/docling.git"
+upstream_ref = "main"
+source_manifest = "third_party/manifests/visual_ir.toml"
+source_category = "visual_object_ir_normalizer"
+source_priority = 2
+source_path = "."
+subtree_prefix = ""
+import_mode = "reference_only"
+decision = "reference_only"
+requires_entrypoint_review = false
+adapter = ""
+validation_command = ""
+notes = "Use as staged pipeline, DocumentConverter, object model, and factory registry reference; no clean split subtree boundary yet."
+
+[[subtrees]]
+id = "opendataloader_pdf"
+full_name = "opendataloader-project/opendataloader-pdf"
+upstream_url = "https://github.com/opendataloader-project/opendataloader-pdf.git"
+upstream_ref = "main"
+source_manifest = "third_party/manifests/reference_repos.toml"
+source_category = "semantic_ir_reference"
+source_priority = 2
+source_path = "."
+subtree_prefix = ""
+import_mode = "reference_only"
+decision = "reference_only"
+requires_entrypoint_review = false
+adapter = ""
+validation_command = ""
+notes = "Keep whole multi-SDK repo as reference-only; promote java/opendataloader-pdf-core separately if Java module checks pass."
+
+[[subtrees]]
+id = "table_transformer"
+full_name = "microsoft/table-transformer"
+upstream_url = "https://github.com/microsoft/table-transformer.git"
+upstream_ref = "main"
+source_manifest = "third_party/repositories.toml"
+source_category = "fake_table_detector"
+source_priority = 1
+source_path = "."
+subtree_prefix = ""
+import_mode = "reference_only"
+decision = "reference_only"
+requires_entrypoint_review = false
+adapter = ""
+validation_command = ""
+notes = "Research/model pipeline with weights/config/DETR sibling code; keep reference-only unless a separate model execution unit is created."
+
+[[subtrees]]
+id = "chartdetective"
+full_name = "m-damien/ChartDetective"
+upstream_url = "https://github.com/m-damien/ChartDetective.git"
+upstream_ref = "main"
+source_manifest = "third_party/repositories.toml"
+source_category = "chart_semantic_extractor"
+source_priority = 1
+source_path = "."
+subtree_prefix = ""
+import_mode = "reference_only"
+decision = "reference_only"
+requires_entrypoint_review = false
+adapter = ""
+validation_command = ""
+notes = "Interactive React app; keep reference-only until reusable chart extraction logic is isolated."
