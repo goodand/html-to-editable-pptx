@@ -6,7 +6,7 @@ metadata:
   hermes:
     tags: [interview, consensus, decision-making, facilitation]
     category: agent-collaboration
-    related_skills: [consensus-recording, task-delegation, evaluation-followup, session-handoff]
+    related_skills: [consensus-recording, task-delegation, evaluation-followup, session-handoff, mmd-diagram-authoring]
 ---
 
 # Interview Facilitation

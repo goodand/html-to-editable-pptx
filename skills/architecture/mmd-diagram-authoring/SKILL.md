@@ -1,23 +1,23 @@
 ---
 name: mmd-diagram-authoring
-description: Use when creating, critiquing, refining, or saving Mermaid .mmd architecture diagrams from design discussions, especially when macro-first plot tuning, action-item labels, pairwise natural-language checks, Korean/English variants, and repository-saved Mermaid files are required.
+description: Author and validate Mermaid architecture diagrams.
 version: 0.1.0
 author: html-to-editable-pptx project
 license: MIT
 metadata:
   hermes:
     tags: [architecture, diagrams, mermaid, mmd, action-items, repository]
+    category: architecture
     related_skills: [consensus-recording, interview-facilitation]
 ---
 
-# MMD Diagram Authoring
+# MMD Diagram Authoring Skill
 
-## Overview
+Author durable Mermaid `.mmd` architecture diagrams from evolving design conversations. This skill preserves the project method: choose action-item keywords first, test adjacent action pairs in natural language, stabilize the macro plot, then decompose accepted actions into lower-level diagrams. This is a skill, not a core tool: the fragile part is diagram judgment and authoring discipline, and the only bundled tool is a lightweight `.mmd` checker.
 
-Author durable Mermaid `.mmd` architecture diagrams from evolving design conversations.
-This skill preserves the project method: choose action-item keywords first, test adjacent action pairs in natural language, stabilize the macro plot, then decompose accepted actions into lower-level diagrams.
+Good MMD diagrams are not dense drawings: they lock one responsibility level, expose missing consensus, and create a stable path to the next lower level.
 
-This is a skill, not a core tool. The fragile part is diagram judgment and authoring discipline. The only bundled tool is a lightweight `.mmd` structural checker.
+When asked to *critique or review* architecture diagrams — or when macro alignment is unstable — read `references/architecture-diagram-evaluation.md` first and evaluate against it: consensus-layer checks precede `.mmd` authoring.
 
 ## When to Use
 
@@ -26,8 +26,26 @@ This is a skill, not a core tool. The fragile part is diagram judgment and autho
 - The diagram needs action-item labels, reviewer decisions, artifact lineage, or evidence/report boundaries.
 - Accepted diagrams should be stored as repository `.mmd` files.
 - Korean and English label variants need to stay structurally aligned.
+- The user asks to lock macro alignment before micro details, preserve artifact lineage, expose decision ownership, or detect consensus gaps in diagrams.
 
 Do not use this for decorative diagrams, one-off unsaved sketches, or diagrams that require a notation other than Mermaid.
+
+## Modes
+
+- **Interactive authoring** — exploratory work with the user: pick the layer, draft action labels, tune pairs, iterate until the user accepts. Reviewer-only checks (see Verification) live here.
+- **Batch validation** — mechanical upkeep of accepted diagrams: save raw `.mmd`, run the checker, keep en/ko variants aligned. Checker-backed checks live here; no design decisions are made in this mode.
+
+## Prerequisites
+
+- Python 3 (stdlib only) for the bundled checker.
+- Target diagrams live under a repository path such as `docs/diagrams/architecture/`; the directory must exist before saving.
+- Familiarity with the project's consensus record is assumed when diagrams encode agreed decisions (see related skills).
+
+## How to Run
+
+Interactive authoring: pick the diagram layer with the user, draft action-item labels, tune adjacent pairs in natural language, iterate until accepted.
+
+Batch validation: save raw Mermaid under the target path and run `python scripts/check_mmd_files.py <target-directory>` from the skill directory (from repo root, prefix the skill path).
 
 ## Quick Reference
 
@@ -37,7 +55,7 @@ Do not use this for decorative diagrams, one-off unsaved sketches, or diagrams t
 | Check flow naturalness | Read each adjacent pair as a sentence |
 | Refine a crowded diagram | Split into macro lifecycle and one subflow at a time |
 | Save accepted diagram | Write raw Mermaid to `docs/diagrams/architecture/*.mmd` |
-| Validate saved files | Run `scripts/check_mmd_files.py` on the target directory |
+| Validate saved files | Run `python scripts/check_mmd_files.py <target-directory>` |
 
 ## Procedure
 
@@ -71,6 +89,8 @@ Use this sequence unless the user asks for a different part:
 4. **Conversion job lifecycle**: render source, extract visual evidence, build IR, map objects, generate PPTX.
 5. **Validation evidence lifecycle**: render generated PPTX, compare visual output, validate editability, produce final report.
 6. **Revision workflow lifecycle**: create revision request bundle, run authenticated revision, register or publish revised source artifact.
+
+> **Consensus note**: layers 1–3 correspond to accepted diagrams in `docs/diagrams/architecture/`. Layers 4–6 record a design *direction* that is not yet reflected in the project's consensus documents (ULTIMATE_GOAL / GOAL_PROBLEM). Until that consensus lands, treat layers 4–6 as proposals, not as a fixed standard — per the principle that consensus documents rank above diagrams and skills.
 
 ## Label Vocabulary
 
@@ -123,20 +143,19 @@ Use lowercase snake case after the numeric prefix. Use `.en.mmd` and `.ko.mmd` w
 
 ## Hermes Placement and Management
 
-- Keep bundled project skills under `skills/`, organized by category.
-- Use `optional-skills/` only for skills that should ship with the repo but not load by default.
-- External or community skills should be managed outside this folder and installed through Hermes skill management.
-- Hermes exposes skills through `skills_list`, `skill_view`, and `skill_manage`; keep `name`, `description`, tags, and related skills clear enough for discovery.
+Bundled project skills live under `skills/<category>/<name>/`; Hermes exposes
+them via `skills_list` / `skill_view` / `skill_manage`. Keep frontmatter
+discoverable; details belong to the Hermes documentation, not this skill.
 
 ## Bundled Script
 
 Use the lightweight checker after saving `.mmd` files:
 
 ```bash
-python skills/architecture/mmd-diagram-authoring/scripts/check_mmd_files.py docs/diagrams/architecture
+python scripts/check_mmd_files.py docs/diagrams/architecture
 ```
 
-The checker validates repository hygiene only: Mermaid declaration, no Markdown fences, and no tabs. It does not replace human diagram review.
+The checker validates machine-checkable structure only: Mermaid declaration, no Markdown fences, no tabs, non-empty targets, and en/ko structural parity when both variants exist. It does not replace human diagram review.
 
 ## Pitfalls
 
@@ -149,12 +168,14 @@ The checker validates repository hygiene only: Mermaid declaration, no Markdown 
 
 ## Verification
 
-A diagram pass is complete when:
+### Machine-verified (run the checker)
 
-- The user accepts the macro plot or targeted subflow.
-- Every edge reads naturally as an action-to-action sentence.
-- Decision nodes name the decision owner when required.
-- Artifact revision and provenance boundaries remain explicit.
-- Accepted diagrams are saved as raw `.mmd` files under the requested path.
-- Korean and English variants have matching structure when both exist.
-- `check_mmd_files.py` passes for saved `.mmd` files.
+- saved `.mmd` files pass `scripts/check_mmd_files.py`: declaration, no fences, no tabs, en/ko structural parity when both variants exist, non-empty target
+
+### Human-judged (cannot be delegated to the checker)
+
+- the user accepts the macro plot or targeted subflow
+- every edge reads naturally as an action-to-action sentence
+- decision nodes name the decision owner when required
+- artifact revision and provenance boundaries remain explicit
+- Korean labels translate the English labels consistently (translation quality)

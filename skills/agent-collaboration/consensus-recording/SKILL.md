@@ -6,7 +6,7 @@ metadata:
   hermes:
     tags: [documentation, consensus, repository, two-readers, yaml-index]
     category: agent-collaboration
-    related_skills: [interview-facilitation, session-handoff]
+    related_skills: [interview-facilitation, session-handoff, mmd-diagram-authoring]
 ---
 
 # Consensus Recording
