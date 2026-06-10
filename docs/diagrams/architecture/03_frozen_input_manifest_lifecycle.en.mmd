@@ -1,0 +1,8 @@
+flowchart TD
+    A[Collect resolved input records] --> B[Attach blob references and content hashes]
+    B --> C[Record source and resolution provenance]
+    C --> D[Record rendering environment metadata]
+    D --> E[Canonicalize manifest records]
+    E --> F[Validate manifest closure and completeness]
+    F --> G[Compute manifest digest]
+    G --> H[Bind manifest to immutable revision]
