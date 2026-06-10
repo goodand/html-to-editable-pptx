@@ -1,0 +1,13 @@
+flowchart LR
+    A[Register initial source artifact] --> B[Generate candidate PPTX]
+    B --> C[Collect validation evidence]
+    C --> D[Assess fidelity, editability, and loss]
+    D --> E{Reviewer decides:<br/>accept or request revision?}
+
+    E -->|Accept| F[Mark candidate accepted]
+    F --> G[Deliver PPTX + report]
+
+    E -->|Request revision| H[Create revision request bundle]
+    H --> I[Run revision workflow]
+    I --> J[Register revised source artifact]
+    J -->|Next revision iteration| B
