@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from datetime import datetime, timezone
@@ -112,10 +113,20 @@ def write_log(
     errors: list[str],
     parity_status: str,
 ) -> None:
+    def render_path(path: Path) -> str:
+        try:
+            return str(path.relative_to(target_dir))
+        except ValueError:
+            cwd = Path.cwd().resolve()
+            try:
+                return os.path.relpath(path.resolve(), start=cwd)
+            except ValueError:
+                return str(path.resolve())
+
     log_path = target_dir / ".mmd_check_log.jsonl"
     record = {
         "checked_at": datetime.now(timezone.utc).isoformat(),
-        "files": [str(path.relative_to(target_dir)) for path in paths],
+        "files": [render_path(path) for path in paths],
         "error_count": len(errors),
         "errors": errors,
         "parity": parity_status,

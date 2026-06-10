@@ -111,3 +111,21 @@ def test_missing_path_fails_with_usage_error() -> None:
     result = run_checker(missing)
     assert result.returncode == 2
     assert "path does not exist" in result.stderr
+
+
+def test_multiple_directories_do_not_crash_logging(tmp_path: Path) -> None:
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    write_mmd(first / "a.mmd", "flowchart TD\n    A[One] --> B[Two]\n")
+    write_mmd(second / "b.mmd", "flowchart TD\n    A[One] --> B[Two]\n")
+
+    result = run_checker(str(first), str(second))
+
+    assert result.returncode == 0
+    assert "Checked 2 .mmd file(s)" in result.stdout
+
+    log_path = first / ".mmd_check_log.jsonl"
+    record = json.loads(log_path.read_text(encoding="utf-8").strip())
+    assert len(record["files"]) == 2
+    assert any(entry == "a.mmd" for entry in record["files"])
+    assert any(entry.endswith("second/b.mmd") or entry.endswith("b.mmd") for entry in record["files"])
