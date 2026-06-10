@@ -1,0 +1,9 @@
+flowchart TD
+    subgraph S[Artifact revision session]
+        A[Register artifact input draft] --> B[Validate bundle shape and entrypoint]
+        B --> C[Resolve local and external references]
+        C --> D[Materialize and fingerprint resolved inputs]
+        D --> E[Write frozen input manifest]
+        E --> F[Publish immutable source artifact revision]
+        F --> G[Create conversion job for published revision]
+    end
