@@ -44,7 +44,7 @@ Do not use this for decorative diagrams, one-off unsaved sketches, or diagrams t
 
 Interactive authoring: pick the diagram layer with the user, draft action-item labels, tune adjacent pairs in natural language, iterate until accepted.
 
-Batch validation: from the repo root, run `python skills/architecture/mmd-diagram-authoring/scripts/check_mmd_files.py --no-log <target-directory>`. If you are already inside the skill directory, drop the leading skill path. Use `--log` only when you intentionally want a JSONL audit log written to the first directory argument.
+Batch validation: from the repo root, run `python skills/architecture/mmd-diagram-authoring/scripts/check_mmd_files.py <target-directory>`. If you are already inside the skill directory, drop the leading skill path. Use `--log` only when you intentionally want a JSONL audit log written to the first directory argument.
 
 ## Quick Reference
 
@@ -54,7 +54,7 @@ Batch validation: from the repo root, run `python skills/architecture/mmd-diagra
 | Check flow naturalness | Read each adjacent pair as a sentence |
 | Refine a crowded diagram | Split into macro lifecycle and one subflow at a time |
 | Save accepted diagram | Write raw Mermaid to `<target-directory>/*.mmd` |
-| Validate saved files | Run the checker with `--no-log` against `<target-directory>` |
+| Validate saved files | Run the checker against `<target-directory>`; add `--log` only for intentional audit logging |
 
 ## Procedure
 
@@ -115,10 +115,10 @@ discoverable; details belong to the Hermes documentation, not this skill.
 Use the lightweight checker after saving `.mmd` files:
 
 ```bash
-python skills/architecture/mmd-diagram-authoring/scripts/check_mmd_files.py --no-log <target-directory>
+python skills/architecture/mmd-diagram-authoring/scripts/check_mmd_files.py <target-directory>
 ```
 
-The checker validates machine-checkable structure only: Mermaid declaration, no Markdown fences, no tabs, non-empty `.mmd` target sets, and en/ko structural parity when both variants exist. It does not replace human diagram review. Use `--log` only when you intentionally want a JSONL audit log written to the first directory argument.
+The checker validates machine-checkable structure only. Hygiene checks are limited to four things: the first non-whitespace line starts with a supported Mermaid declaration prefix, the file contains no Markdown fences, the file contains no tabs, and the target contains at least one `.mmd` file. Parity checks compare only same-stem `*.en.mmd` / `*.ko.mmd` pairs, and only for node IDs and edge endpoints. Edge labels, display labels, styles, duplicate edge counts, unpaired language-variant files, and files without `.en/.ko` suffixes are not treated as parity failures. It does not replace human diagram review. Use `--log` only when you intentionally want a JSONL audit log written to the first directory argument.
 
 ## Pitfalls
 
@@ -133,7 +133,7 @@ The checker validates machine-checkable structure only: Mermaid declaration, no 
 
 ### Machine-verified (run the checker)
 
-- saved `.mmd` files pass `scripts/check_mmd_files.py`: declaration, no fences, no tabs, en/ko structural parity when both variants exist, non-empty `.mmd` target sets
+- saved `.mmd` files pass `scripts/check_mmd_files.py`: supported declaration prefix on the first non-whitespace line, no fences, no tabs, non-empty `.mmd` target sets, and same-stem `*.en.mmd` / `*.ko.mmd` parity for node IDs and edge endpoints only
 
 ### Human-judged (cannot be delegated to the checker)
 

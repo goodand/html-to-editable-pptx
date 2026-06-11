@@ -69,12 +69,14 @@ def graph_signature(path: Path) -> tuple[set[str], set[tuple[str, str]]]:
     return node_ids, edges
 
 
-def check_parity(paths: list[Path]) -> tuple[list[str], str]:
+def check_parity(paths: list[Path]) -> tuple[list[str], str, str]:
     pairs: dict[str, dict[str, Path]] = {}
+    pair_named_files = 0
     for path in paths:
         match = PAIR_NAME_RE.match(path.name)
         if not match:
             continue
+        pair_named_files += 1
         pairs.setdefault(match.group("stem"), {})[match.group("lang")] = path
 
     comparable = {
@@ -82,8 +84,14 @@ def check_parity(paths: list[Path]) -> tuple[list[str], str]:
         for stem, lang_map in pairs.items()
         if "en" in lang_map and "ko" in lang_map
     }
+    unpaired_variants = pair_named_files - (2 * len(comparable))
     if not comparable:
-        return [], "parity: n/a (no pairs)"
+        suffix = (
+            f"; {unpaired_variants} unpaired language variants skipped"
+            if unpaired_variants
+            else ""
+        )
+        return [], f"parity: n/a (no comparable *.en.mmd/*.ko.mmd pairs{suffix})", "n/a"
 
     errors: list[str] = []
     for stem, lang_map in sorted(comparable.items()):
@@ -100,12 +108,22 @@ def check_parity(paths: list[Path]) -> tuple[list[str], str]:
                 f"en={sorted(en_edges)} ko={sorted(ko_edges)}"
             )
 
-    summary = (
-        f"parity: ok ({len(comparable)} pairs)"
-        if not errors
-        else "parity: mismatch"
+    status = "ok" if not errors else "mismatch"
+    suffix = (
+        f"; {unpaired_variants} unpaired language variants skipped"
+        if unpaired_variants
+        else ""
     )
-    return errors, summary
+    detail = (
+        f"{len(comparable)} comparable pairs; node IDs and edge endpoints only; "
+        "edge labels, display labels, styles, and duplicate counts not checked"
+    )
+    summary = (
+        f"parity: ok ({detail}{suffix})"
+        if status == "ok"
+        else f"parity: mismatch ({detail}{suffix})"
+    )
+    return errors, summary, status
 
 
 def write_log(
@@ -180,13 +198,8 @@ def main(argv: list[str]) -> int:
     for path in mmd_paths:
         errors.extend(check_file(path))
 
-    parity_errors, parity_summary = check_parity(mmd_paths)
+    parity_errors, parity_summary, parity_status = check_parity(mmd_paths)
     errors.extend(parity_errors)
-    parity_status = (
-        "ok" if parity_summary.startswith("parity: ok") else
-        "mismatch" if parity_summary.endswith("mismatch") else
-        "n/a"
-    )
 
     if log_target is not None and write_log_enabled:
         write_log(log_target, mmd_paths, errors, parity_status)

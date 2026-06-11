@@ -67,7 +67,10 @@ def test_parity_ok_pair_reports_summary(tmp_path: Path) -> None:
     write_mmd(tmp_path / "02_pair.ko.mmd", text_ko)
     result = run_checker(str(tmp_path))
     assert result.returncode == 0
-    assert "parity: ok (1 pairs)" in result.stdout
+    assert "parity: ok (" in result.stdout
+    assert "1 comparable pairs" in result.stdout
+    assert "node IDs and edge endpoints only" in result.stdout
+    assert "edge labels, display labels, styles, and duplicate counts not checked" in result.stdout
 
 
 def test_parity_mismatch_fails(tmp_path: Path) -> None:
@@ -77,7 +80,7 @@ def test_parity_mismatch_fails(tmp_path: Path) -> None:
     write_mmd(tmp_path / "02_pair.ko.mmd", text_ko)
     result = run_checker(str(tmp_path))
     assert result.returncode == 1
-    assert "parity: mismatch" in result.stdout
+    assert "parity: mismatch (" in result.stdout
     assert "edge parity mismatch" in result.stderr
 
 
@@ -88,8 +91,16 @@ def test_parity_labeled_edge_mismatch_fails(tmp_path: Path) -> None:
     write_mmd(tmp_path / "01_pair.ko.mmd", text_ko)
     result = run_checker(str(tmp_path))
     assert result.returncode == 1
-    assert "parity: mismatch" in result.stdout
+    assert "parity: mismatch (" in result.stdout
     assert "edge parity mismatch" in result.stderr
+
+
+def test_unpaired_language_variant_is_reported_as_na(tmp_path: Path) -> None:
+    write_mmd(tmp_path / "03_pair.en.mmd", "flowchart TD\n    A[One] --> B[Two]\n")
+    result = run_checker(str(tmp_path))
+    assert result.returncode == 0
+    assert "parity: n/a (no comparable *.en.mmd/*.ko.mmd pairs" in result.stdout
+    assert "1 unpaired language variants skipped" in result.stdout
 
 
 def test_log_is_opt_in_and_no_log_skips(tmp_path: Path) -> None:
