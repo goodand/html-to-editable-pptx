@@ -1,5 +1,5 @@
-<!-- Portable principles subset of docs/architecture_evaluation_philosophy_v0.2.md.
-     Project-specific §6 and project-flavored appendices are intentionally excluded. -->
+<!-- Principles subset mirrored from docs/architecture_evaluation_philosophy_v0.2.md.
+     Project-specific §6 is excluded; some project-flavored examples remain and are marked in place. -->
 
 ## 0. 목적
 
@@ -128,11 +128,11 @@ accept / revise 구조가 있다면 — 누가 판단하는지 / 무엇으로 �
 
 평가 문서는 구현안을 길게 쓰지 않는다. 구현안은 후속 결정 문서의 일이다.
 
-## 6. 이 portable subset에서 제외된 부분
+## 6. 이 principles subset에서 제외된 부분
 
-원본 문서의 §6은 이 프로젝트에만 적용되는 질문 목록이라서 여기서는 의도적으로 제외한다.
+원본 문서의 §6은 이 프로젝트에만 적용되는 질문 목록이라서 여기서는 의도적으로 제외한다. 프로젝트 기원 부록(A/B)은 원본 철학 문서에만 남긴다.
 
 ## 7. 한 줄 요약
 
-> **이 프로젝트의 아키텍처 평가는 "안쪽 구현이 정교한가"보다 먼저 "바깥 목적과 구조가 잠겼는가"를 본다.**
+> **좋은 아키텍처 평가는 "안쪽 구현이 정교한가"보다 먼저 "바깥 목적과 구조가 잠겼는가"를 본다.**
 > 성과·산출·입력이 잠긴 뒤에 절차를, 거시 정렬이 끝난 뒤에만 미시 정렬을 안정된 결정으로 인정한다.

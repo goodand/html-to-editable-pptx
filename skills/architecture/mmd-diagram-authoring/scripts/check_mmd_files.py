@@ -32,6 +32,7 @@ EDGE_RE = re.compile(
     r"([A-Za-z][A-Za-z0-9_]*)"
     r"(?:\s*[\[\{\(][^\]\}\)]*[\]\}\)])?"
     r"\s*(?:-->|---|-.->|==>)\s*"
+    r"(?:\|[^|]*\|\s*)?"
     r"([A-Za-z][A-Za-z0-9_]*)"
 )
 
@@ -140,9 +141,14 @@ def main(argv: list[str]) -> int:
         print("Usage: check_mmd_files.py <file-or-directory> [...]", file=sys.stderr)
         return 2
 
-    no_log = False
-    if "--no-log" in argv:
-        no_log = True
+    write_log_enabled = False
+    if "--log" in argv and "--no-log" in argv:
+        print("choose either --log or --no-log, not both", file=sys.stderr)
+        return 2
+    if "--log" in argv:
+        write_log_enabled = True
+        argv = [arg for arg in argv if arg != "--log"]
+    elif "--no-log" in argv:
         argv = [arg for arg in argv if arg != "--no-log"]
         if not argv:
             print("Usage: check_mmd_files.py <file-or-directory> [...]", file=sys.stderr)
@@ -182,7 +188,7 @@ def main(argv: list[str]) -> int:
         "n/a"
     )
 
-    if log_target is not None and not no_log:
+    if log_target is not None and write_log_enabled:
         write_log(log_target, mmd_paths, errors, parity_status)
 
     print(parity_summary)

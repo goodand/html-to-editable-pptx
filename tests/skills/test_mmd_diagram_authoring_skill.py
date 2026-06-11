@@ -81,12 +81,27 @@ def test_parity_mismatch_fails(tmp_path: Path) -> None:
     assert "edge parity mismatch" in result.stderr
 
 
-def test_log_appends_and_no_log_skips(tmp_path: Path) -> None:
+def test_parity_labeled_edge_mismatch_fails(tmp_path: Path) -> None:
+    text_en = "flowchart TD\n    A[One] -->|Accept| C[Three]\n"
+    text_ko = "flowchart TD\n    A[하나]\n"
+    write_mmd(tmp_path / "01_pair.en.mmd", text_en)
+    write_mmd(tmp_path / "01_pair.ko.mmd", text_ko)
+    result = run_checker(str(tmp_path))
+    assert result.returncode == 1
+    assert "parity: mismatch" in result.stdout
+    assert "edge parity mismatch" in result.stderr
+
+
+def test_log_is_opt_in_and_no_log_skips(tmp_path: Path) -> None:
     write_mmd(tmp_path / "single.mmd", "flowchart TD\n    A[Start] --> B[End]\n")
     log_path = tmp_path / ".mmd_check_log.jsonl"
 
-    first = run_checker(str(tmp_path))
-    second = run_checker(str(tmp_path))
+    plain = run_checker(str(tmp_path))
+    assert plain.returncode == 0
+    assert not log_path.exists()
+
+    first = run_checker("--log", str(tmp_path))
+    second = run_checker("--log", str(tmp_path))
     no_log = run_checker("--no-log", str(tmp_path))
 
     assert first.returncode == 0
@@ -119,7 +134,7 @@ def test_multiple_directories_do_not_crash_logging(tmp_path: Path) -> None:
     write_mmd(first / "a.mmd", "flowchart TD\n    A[One] --> B[Two]\n")
     write_mmd(second / "b.mmd", "flowchart TD\n    A[One] --> B[Two]\n")
 
-    result = run_checker(str(first), str(second))
+    result = run_checker("--log", str(first), str(second))
 
     assert result.returncode == 0
     assert "Checked 2 .mmd file(s)" in result.stdout
