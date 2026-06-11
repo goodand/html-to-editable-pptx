@@ -22,7 +22,6 @@ When asked to *critique or review* architecture diagrams — or when macro align
 ## When to Use
 
 - The user asks to create, critique, revise, or save Mermaid/MMD diagrams.
-- The user wants macro-first architecture alignment before micro-level detail.
 - The diagram needs action-item labels, reviewer decisions, artifact lineage, or evidence/report boundaries.
 - Accepted diagrams should be stored as repository `.mmd` files.
 - Korean and English label variants need to stay structurally aligned.
@@ -32,8 +31,8 @@ Do not use this for decorative diagrams, one-off unsaved sketches, or diagrams t
 
 ## Modes
 
-- **Interactive authoring** — exploratory work with the user: pick the layer, draft action labels, tune pairs, iterate until the user accepts. Reviewer-only checks (see Verification) live here.
-- **Batch validation** — mechanical upkeep of accepted diagrams: save raw `.mmd`, run the checker, keep en/ko variants aligned. Checker-backed checks live here; no design decisions are made in this mode.
+- **Interactive authoring** — exploratory work with the user: pick the layer, draft action labels, tune pairs, iterate until the user accepts. Reviewer-only checks live here; these map to the Human-judged items in Verification.
+- **Batch validation** — mechanical upkeep of accepted diagrams: save raw `.mmd`, run the checker, keep en/ko variants aligned. Checker-backed checks live here; these map to the Machine-verified items in Verification, and no design decisions are made in this mode.
 
 ## Prerequisites
 
@@ -79,55 +78,20 @@ Batch validation: save raw Mermaid under the target path and run `python scripts
 
 10. **Validate `.mmd` files.** Run the bundled checker when available.
 
-## Diagram Layers
+## Project-local references
 
-Use this sequence unless the user asks for a different part:
+This skill stays portable by keeping project decomposition and glossary material in separate references. When you are working inside `html-to-editable-pptx`, consult:
 
-1. **Artifact session lifecycle**: register source, generate candidate, collect evidence, assess, accept or request revision.
-2. **Source artifact registration**: draft input, validate, resolve, materialize, manifest, publish revision, create job.
-3. **Frozen input manifest lifecycle**: records, blob refs and hashes, provenance, rendering environment metadata, canonicalization, closure validation, digest, revision binding.
-4. **Conversion job lifecycle**: render source, extract visual evidence, build IR, map objects, generate PPTX.
-5. **Validation evidence lifecycle**: render generated PPTX, compare visual output, validate editability, produce final report.
-6. **Revision workflow lifecycle**: create revision request bundle, run authenticated revision, register or publish revised source artifact.
+- `references/project-diagram-layers.md` for this repository's current layer map.
+- `references/project-label-vocabulary.md` for current action-label examples and the English/Korean glossary.
 
-> **Consensus note**: layers 1–3 correspond to accepted diagrams in `docs/diagrams/architecture/`. Layers 4–6 record a design *direction* that is not yet reflected in the project's consensus documents (ULTIMATE_GOAL / GOAL_PROBLEM). Until that consensus lands, treat layers 4–6 as proposals, not as a fixed standard — per the principle that consensus documents rank above diagrams and skills.
+Treat both references as project-local aids, not as generic authoring rules.
 
-## Label Vocabulary
+## Labeling Principles
 
-Prefer:
+Prefer action labels over nouns, and treat any concrete labels as examples rather than as portable standards. If a project maintains a glossary, keep the glossary below the consensus layer and update the skill only when the *principle* changes.
 
-- `Register artifact input draft`
-- `Validate bundle shape and entrypoint`
-- `Resolve local and external references`
-- `Materialize and fingerprint resolved inputs`
-- `Write frozen input manifest`
-- `Publish immutable source artifact revision`
-- `Create conversion job for published revision`
-
-Avoid:
-
-- `Create v1` / `Create v2` labels in architecture diagrams. Use parameterized or role-based language instead.
-- `Run conversion` when the purpose is clearer as `Generate candidate PPTX`.
-- `Gather evidence` when the intended evidence is validation-specific; use `Collect validation evidence`.
-- `Record environment assumptions`; use `Record rendering environment metadata`.
-- `Seal manifest` when the real outputs are digest computation and revision binding.
-
-## Korean Labeling
-
-When producing Korean variants, keep the structure identical to the English file and translate labels consistently.
-
-Preferred translations:
-
-| English | Korean |
-|---|---|
-| Artifact revision session | 아티팩트 리비전 세션 |
-| Register artifact input draft | 아티팩트 입력 초안 등록 |
-| Validate bundle shape and entrypoint | 번들 구조와 진입점 검증 |
-| Resolve local and external references | 로컬 및 외부 참조 해석 |
-| Materialize and fingerprint resolved inputs | 해석된 입력을 실체화하고 지문 생성 |
-| Write frozen input manifest | 고정 입력 매니페스트 작성 |
-| Publish immutable source artifact revision | 불변 소스 아티팩트 리비전 발행 |
-| Create conversion job for published revision | 발행된 리비전에 대한 변환 작업 생성 |
+When producing Korean variants, keep the structure identical to the English file and translate labels consistently. Project-specific translations belong in a glossary or reference file, not in the portable skill body.
 
 ## File Naming
 
