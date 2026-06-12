@@ -11,6 +11,7 @@ fi
 cd "$ROOT"
 H="${1:-fixtures/deck.html}"
 B="$(basename "${H%.html}")"
+ASSET_BASE="$(cd "$(dirname "$H")" && pwd)"
 
 # Portable LibreOffice pptx→pdf runner: container skill → PATH → macOS app bundle.
 # `timeout` is absent on stock macOS, so it is applied only when available.
@@ -31,7 +32,7 @@ echo "── stage 1: extract"
 python3 src/extract/weasy_extract.py "$H" "out/$B.ir.json"
 
 echo "── stage 2: map (+normalize)"
-node src/map/ir_to_pptx.mjs "out/$B.ir.json" "out/$B.pptx"
+node src/map/ir_to_pptx.mjs "out/$B.ir.json" "out/$B.pptx" --base-dir "$ASSET_BASE"
 
 echo "── stage 3: parallel validation subflows"
 ( python3 src/validate/validate_ab.py "$H" "out/$B.pptx" > "out/$B.ab.json" 2> "out/$B.ab.err" || true ) &

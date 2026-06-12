@@ -137,6 +137,6 @@ src/map/ir_to_pptx.mjs         → .pptx
 | S3-2 | D-2-1 | ✅ 완료 — `ir_to_pptx.mjs` resolver가 runtime-import ↔ 폴백 자동 전환 |
 | S3-3 | D-2-2 | ✅ 완료 — `docs/vocabulary_v0.1.md` 신규 (crosswalk canonical) |
 | S3-4 | D-2-3 | ✅ 완료 — `docs/architecture_v0.1.md` §9 Language Topology |
-| S3-5 | D-2-1 | reuse_report_v0.1 §6.1 validation #5에 supersede 각주 추가 (다음 패킷) |
+| S3-5 | D-2-1 | ✅ 완료 — reuse_report_v0.1 §6.1 validation #5에 supersede 각주 추가 |
 | S3-6 | — | pixelmatch / looks-same / odiff subtree 실행 (subtrees.toml 결정 보유) |
 | S3-7 | D-2-1 | 잔여 5개 함수 이식 보류 — WeasyPrint 경로에서 불필요 판정 기록 |

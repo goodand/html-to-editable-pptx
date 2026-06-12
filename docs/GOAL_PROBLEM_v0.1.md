@@ -64,6 +64,12 @@ Yes, as tracked candidate sources. But they are not yet implemented as project-n
 
 ## Core pipeline
 
+> Current implementation addendum (2026-06-13): the merged v0.1 parser path is
+> `static HTML/CSS slides -> WeasyPrint box-tree extraction -> Visual Object IR
+> -> PPTX mapper -> rendered validation`. The Playwright /
+> `getBoundingClientRect` path below is the future browser-backed path for
+> JS-rendered DOM if that input class enters v1 scope.
+
 ```text
 HTML / CSS / JS-rendered page
   -> Playwright browser rendering

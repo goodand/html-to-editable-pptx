@@ -55,6 +55,7 @@ def run(ir_path, pptx_path):
         frames = [o for o in objs if o["kind"] == "frame"]
         pics = [o for o in objs if o["kind"] == "image"]
         texts = {o["text"]: o for o in objs if o["kind"] == "text" and o["text"]}
+        shape_cands = [o for o in objs if o["kind"] == "text" and not o["text"]]
         fi = 0
         for n in sl["nodes"]:
             match = None
@@ -66,8 +67,9 @@ def run(ir_path, pptx_path):
                 if pics: match = pics.pop(0)
             elif n["semanticType"] == "shape":
                 # shapes carry no text; match nearest empty-text sp by IoU
-                cands = [o for o in objs if o["kind"] == "text" and not o["text"]]
-                match = max(cands, key=lambda o: iou(n["bbox"], o["bbox"]), default=None)
+                match = max(shape_cands, key=lambda o: iou(n["bbox"], o["bbox"]), default=None)
+                if match is not None:
+                    shape_cands.remove(match)
             if match is None:
                 report.append({"slide": si + 1, "sourceRef": n["sourceRef"],
                                "type": n["semanticType"], "iou": 0.0, "severity": "critical",

@@ -70,14 +70,14 @@ category: `software-development` (기존: agent-collaboration, architecture).
 | AE-01 IR contract undefined | `src/ir/schema.ts` v1.2.0, invariants I1–I9 defined |
 | AE-02 renderer unowned | `scripts/run.sh` LibreOffice portable resolver owns PPTX→render |
 | AE-05 Playwright boundary unanswered | WeasyPrint = deterministic extraction backend; IR abstraction isolates backend choice |
-| AE-06 acceptance metrics unnamed | Layer A: missing=0 + jaccard≥1.0 per slide; Layer B: MD5 match; Layer C: diffPct<5%; Layer D: IoU>0.90, editabilityScore≥0.8 |
+| AE-06 acceptance metrics unnamed | Layer A: missing=0 + jaccard≥1.0 per slide; Layer B: MD5 match; Layer C: diffPct<5%; Layer D: IoU>0.90, nativeObjectRatio≥0.8 (`editabilityScore` is a legacy alias, not final edit-quality scoring) |
 
 ---
 
 ## Validation pass criteria (smoke test)
 
 ```bash
-npm install
+npm ci
 bash scripts/run.sh fixtures/deck.html
 ```
 
@@ -87,7 +87,7 @@ bash scripts/run.sh fixtures/deck.html
 | Layer B | `out/deck.ab.json` | `layerB_media.pass: true` |
 | Layer C | stdout stage-4 | each slide `diffPct < 5` |
 | Layer D | `out/deck.d.json` | `layerD_layout.pass: true`, `worstIoU > 0.90` |
-| Editability | `out/deck.mapreport.json` | `editabilityScore: 1`, `fallback: 0` |
+| Native object ratio | `out/deck.mapreport.json` | `nativeObjectRatio: 1`, `editabilityScore: 1` legacy alias, `fallback: 0` |
 
 ---
 

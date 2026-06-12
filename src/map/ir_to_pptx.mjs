@@ -1,6 +1,6 @@
 // IR JSON -> editable .pptx via PptxGenJS.
 // Ported from dom-to-pptx: PX_TO_INCH=1/96, render-item type dispatch, paint-order z.
-// Usage: node src/map/ir_to_pptx.mjs out/slide13.ir.json out/slide13.pptx
+// Usage: node src/map/ir_to_pptx.mjs out/slide13.ir.json out/slide13.pptx [--base-dir fixtures]
 import fs from "node:fs";
 import PptxGenJS from "pptxgenjs";
 import JSZip from "jszip";
@@ -51,7 +51,13 @@ const PX_TO_PT = 72 / 96;           // CSS px -> typographic pt
 const inch = (px) => +(px * PX_TO_INCH).toFixed(3);
 const pt = (px) => +(px * PX_TO_PT).toFixed(1);
 
-const [, , irPath, outPath] = process.argv;
+const [, , irPath, outPath, ...args] = process.argv;
+let baseDir = path.dirname(path.resolve(irPath || "."));
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === "--base-dir") {
+    baseDir = path.resolve(args[++i]);
+  }
+}
 const ir = JSON.parse(fs.readFileSync(irPath, "utf8"));
 
 const errs = validateIR(ir);
@@ -61,11 +67,17 @@ const pptx = new PptxGenJS();
 pptx.defineLayout({ name: "PX", width: inch(ir.pagePx.w), height: inch(ir.pagePx.h) });
 pptx.layout = "PX";
 
-const stats = { native: 0, fallback: 0, byType: {} };
+const stats = { native: 0, fallback: 0, byType: {}, fallbacks: [] };
 const count = (t, ok) => { stats.byType[t] = (stats.byType[t] || 0) + 1; ok ? stats.native++ : stats.fallback++; };
+const recordFallback = (n, reason) => {
+  stats.fallbacks.push({ sourceRef: n.sourceRef, semanticType: n.semanticType, reason });
+  console.warn(`FALLBACK ${n.sourceRef}: ${reason}`);
+  count(n.semanticType, false);
+};
 
 const geo = (n) => ({ x: inch(n.bbox.x), y: inch(n.bbox.y), w: inch(n.bbox.w), h: inch(n.bbox.h) });
 const transp = (s) => (s.opacity != null ? Math.round((1 - s.opacity) * 100) : undefined);
+const imagePath = (src) => path.isAbsolute(src) ? src : path.join(baseDir, src);
 
 for (const sl of ir.slides) {
 const slide = pptx.addSlide();
@@ -86,7 +98,7 @@ for (const n of [...sl.nodes].sort((a, b) => a.zIndex - b.zIndex)) {
       rectRadius: s.borderRadiusPx ? inch(s.borderRadiusPx) : 0 });
     count("shape", true);
   } else if (n.semanticType === "image") {
-    slide.addImage({ path: n.src, ...geo(n) });
+    slide.addImage({ path: imagePath(n.src), ...geo(n) });
     count("image", true);
   } else if (n.semanticType === "table") {
     const NONE = { type: "none" };
@@ -119,10 +131,21 @@ for (const n of [...sl.nodes].sort((a, b) => a.zIndex - b.zIndex)) {
       dataLabelColor: "E8E8E8", showLegend: false,
       valGridLine: { color: "2A3B5C", size: 0.5 } });
     count("chart", true);
+  } else if (n.semanticType === "fallbackRegion") {
+    slide.addShape("rect", { ...geo(n),
+      fill: { color: "FFFFFF", transparency: 100 },
+      line: { color: "D97706", transparency: 10, dash: "dash", width: 1 } });
+    recordFallback(n, n.reason || "fallbackRegion");
+  } else if (n.semanticType === "group") {
+    slide.addShape("rect", { ...geo(n),
+      fill: { color: "FFFFFF", transparency: 100 },
+      line: { color: "9CA3AF", transparency: 30, dash: "dash", width: 1 } });
+    recordFallback(n, "group unsupported in v0.1 mapper");
   } else {
-    slide.addImage({ path: n.src || "", ...geo(n) });   // fallbackRegion (logged)
-    console.warn(`FALLBACK ${n.sourceRef}: ${n.reason || "unmapped"}`);
-    count(n.semanticType, false);
+    slide.addShape("rect", { ...geo(n),
+      fill: { color: "FFFFFF", transparency: 100 },
+      line: { color: "EF4444", transparency: 10, dash: "dash", width: 1 } });
+    recordFallback(n, n.reason || "unmapped semanticType");
   }
 }
 }
@@ -135,6 +158,7 @@ const zip = await JSZip.loadAsync(fs.readFileSync(outPath));
 await normalizePptxZip(zip);
 fs.writeFileSync(outPath, await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" }));
 const total = stats.native + stats.fallback;
-const report = { out: outPath, nodes: total, editabilityScore: +(stats.native / total).toFixed(3), normalizer: normalizerSource, ...(normalizerNote ? { normalizerNote } : {}), ...stats };
+const nativeObjectRatio = total ? +(stats.native / total).toFixed(3) : 0;
+const report = { out: outPath, nodes: total, nativeObjectRatio, editabilityScore: nativeObjectRatio, normalizer: normalizerSource, ...(normalizerNote ? { normalizerNote } : {}), ...stats };
 fs.writeFileSync(outPath.replace(/\.pptx$/, ".mapreport.json"), JSON.stringify(report, null, 1));
 console.log(JSON.stringify(report));

@@ -402,6 +402,12 @@ Each transplanted function carries a comment header:
 4. No `html2canvas` import in our `src/` tree (verifies the editability-first commitment).
 5. The original `dom_to_pptx` package is **not** listed in our `package.json` dependencies.
 
+> Superseded by D-2-1 in `docs/integration_step2_consensus_v0.1.md`:
+> `dom-to-pptx` is now an `optionalDependency`, and the mapper first attempts
+> runtime import of `normalizePptxZip` before falling back to the transplanted
+> `src/output/normalize-zip.js` copy. The no-runtime-dependency rule above is
+> retained as historical evidence for the original bootstrap decision.
+
 ### 8. Non-goals
 
 - **Case: State** — Do not import `dom_to_pptx` as a runtime dep. This locks pptxgenjs major version and pulls html2canvas — two conflicts with our architecture.

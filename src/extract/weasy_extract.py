@@ -217,10 +217,11 @@ def extract(html_path, out_path):
 
         def handle_image(box, ref, op, clip):
             rel = img_srcs.pop(0) if img_srcs else "logo.png"
-            src = os.path.join(base, rel)
-            md5 = hashlib.md5(open(src, "rb").read()).hexdigest()
+            src_path = rel if os.path.isabs(rel) else os.path.join(base, rel)
+            ir_src = os.path.relpath(src_path, base) if os.path.isabs(src_path) else rel
+            md5 = hashlib.md5(open(src_path, "rb").read()).hexdigest()
             emit({"sourceRef": ref, "semanticType": "image", "bbox": bbox_of(box),
-                  "style": style_of(box), "src": src, "md5": md5}, op, clip)
+                  "style": style_of(box), "src": ir_src, "md5": md5}, op, clip)
 
         def is_text_para(box):
             return box.element_tag in ("p", "h1", "h2", "h3", "span", "li") and texts_under(box)

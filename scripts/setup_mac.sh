@@ -12,8 +12,8 @@ echo "── python deps"
 python3 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip weasyprint
 
-echo "── node deps (uses package.json)"
-npm install
+echo "── node deps (uses package-lock.json)"
+npm ci
 
 echo
 echo "Optional (Korean text fidelity in renders):"
