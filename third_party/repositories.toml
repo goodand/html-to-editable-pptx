@@ -31,3 +31,35 @@ id = "pptxgenjs"
 full_name = "gitbrent/PptxGenJS"
 category = "pptx_output_backend"
 priority = 1
+
+# ── npm package dependencies (runtime, no subtree) ──────────────────────────
+
+[[repositories]]
+id = "jszip"
+full_name = "Stuk/jszip"
+category = "pptx_output_backend"
+priority = 2
+notes = "OOXML re-pack after normalizePptxZip; npm package_dependency only"
+
+[[repositories]]
+id = "xmldom"
+full_name = "xmldom/xmldom"
+category = "pptx_output_backend"
+priority = 2
+notes = "DOMParser/XMLSerializer polyfill for dom-to-pptx pptx-normalizer in Node; npm package_dependency only"
+
+[[repositories]]
+id = "pngjs"
+full_name = "lukeapage/pngjs"
+category = "fallback_validation"
+priority = 2
+notes = "PNG encode/decode for pixelmatch; npm package_dependency only"
+
+# ── Python package dependencies (runtime, no subtree) ────────────────────────
+
+[[repositories]]
+id = "weasyprint"
+full_name = "Kozea/WeasyPrint"
+category = "visual_object_ir_normalizer"
+priority = 2
+notes = "Rule-based CSS layout engine; pip package_dependency only. AE-05: deterministic extraction backend alternative to Playwright where browser binaries are unavailable."

@@ -1,0 +1,24 @@
+{
+  "name": "html-to-editable-pptx",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Editability-first HTML to PPTX parser — rule-based, no ML",
+  "scripts": {
+    "convert": "node src/map/ir_to_pptx.mjs",
+    "validate:ab": "python3 src/validate/validate_ab.py",
+    "validate:c": "node src/validate/pixel_c.mjs",
+    "validate:d": "python3 src/validate/layout_d.py",
+    "run": "PATH=\"$PWD/.venv/bin:$PATH\" bash scripts/run.sh",
+    "test": "PATH=\"$PWD/.venv/bin:$PATH\" bash scripts/run.sh fixtures/deck.html"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.10",
+    "jszip": "^3.10.1",
+    "pixelmatch": "^7.2.0",
+    "pngjs": "^7.0.0",
+    "pptxgenjs": "^4.0.1"
+  },
+  "optionalDependencies": {
+    "dom-to-pptx": "^1.1.10"
+  }
+}

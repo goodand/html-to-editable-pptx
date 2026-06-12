@@ -1,2 +1,23 @@
 docs/diagrams/architecture/.mmd_check_log.jsonl
 tests/skills/__pycache__/
+
+# Node
+node_modules/
+package-lock.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Generated artifacts (scripts/run.sh output)
+out/*.png
+out/*.pdf
+out/*.pptx
+out/*.json
+out/*.err
+!out/.gitkeep
+
+# macOS
+.DS_Store

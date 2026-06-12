@@ -231,3 +231,88 @@ execution result:
 ## 7. 한 줄 요약
 
 > **실행 작업의 품질은 수정 내용만으로 결정되지 않는다. 올바른 환경에서, 올바른 검증을 통과하고, publish 가능한 surface에서, 재사용 가능한 halt report까지 남겨야 비로소 완료다.**
+
+---
+
+## Parser Implementation Lessons — Sessions 2–3 (from h2p/docs/lessons.md)
+
+The following lessons were accumulated during the bootstrap-phase parser
+implementation (WeasyPrint extractor, IR v1.2.0, PptxGenJS mapper, 4-layer
+validation). They document concrete bugs and design decisions at the code level,
+and are the primary evidence base for AE-01 / AE-02 / AE-05 / AE-06 responses.
+
+# Lessons — HTML→PPTX parser (session 1)
+
+1. **AbsolutePlaceholder proxies everything.** WeasyPrint wraps absolutely-positioned
+   boxes; `__getattr__` delegates to `._box`, so class-name checks silently miss them.
+   Unwrap (`getattr(box,'_box',box)`) before classifying. Cost: card shape dropped.
+
+2. **tbody exists even when unwritten.** TableRowBox sits under TableRowGroupBox, never
+   directly under TableBox. Collect rows recursively. Cost: rows=0 on first run.
+
+3. **No browser ≠ no layout engine.** Playwright binaries can't download here
+   (CDN blocked); WeasyPrint (pip) is a deterministic, rule-based CSS layout engine
+   exposing a full box tree with page-absolute coordinates. dom-to-pptx is browser-only
+   (getComputedStyle); its ideas (PX_TO_INCH=1/96, item-type dispatch, paint-order z)
+   ported instead of its code.
+
+4. **The diff parser is the regression gate.** bag-of-lines (Counter, whitespace-norm)
+   gave a zero-config Layer-A check: 17/17 source lines preserved, 0 invented.
+   MD5 hashing gave Layer B for free. Jaccard reserved for multi-slide regression.
+
+5. **Cross-renderer pixel diff has a floor.** WeasyPrint vs LibreOffice font rasterizing
+   alone produced ~2.85% mismatch on a passing slide. Per critique #15, pin the render
+   environment (Docker + fonts-noto-cjk + soffice version) before tightening the 5% gate.
+
+6. **v69 API drift.** `text_align` → `text_align_all`. Style keys are version-coupled;
+   guard with try/except and record the probe output.
+
+# Session 2 — improvement roadmap implementation
+
+7. **RasterImage hides its URL.** WeasyPrint's replaced-box `.replacement` (RasterImage)
+   exposes no source path. Rule-based fix: parse `<img src>` from raw HTML in document
+   order (stdlib HTMLParser) and consume by encounter order. Holds while box traversal
+   order == document order; breaks if CSS reorders floats — revisit then.
+
+8. **Normalizer reuse needs a resolver, not a naive import.** dom-to-pptx's public npm
+   export does not expose `normalizePptxZip` in v1.1.10, so the mapper tries the
+   optional runtime import first and then falls back to `src/output/normalize-zip.js`.
+   `globalThis.DOMParser ??= xmldom.DOMParser` keeps that fallback runnable in Node.
+   Verified: 14 Content_Types Overrides, 0 dangling.
+
+9. **WeasyPrint hands you the grid for free.** TableCellBox carries grid_x / colspan /
+   rowspan directly — no DOM attribute parsing needed (unlike dom-to-pptx which reads
+   getAttribute). colWidths: take widths from colspan==1 cells at their grid_x, then
+   split merged widths across never-single columns (extractTableData idea, ported).
+
+10. **Covered cells simply don't exist.** Both browser DOM and WeasyPrint omit cells
+    covered by a span — so IR rows[][] naturally satisfies invariant I8 and PptxGenJS's
+    expectation. No skip-logic needed. OOXML check: gridSpan=1, rowSpan/vMerge=2.
+
+11. **Opacity is a product, clipping is an intersection.** dom-to-pptx accumulates
+    `currentOpacity *= elOpacity` down the tree and skips op==0 subtrees; ported as
+    walk(op) param. overflow:hidden becomes a clip-rect stack;per-emit intersects bbox
+    (420px strip → 160px). Border-radius clipping NOT modeled — known gap.
+
+12. **Parallel validation subflows are free wins.** Semantic (A+B, python) and visual
+    (C, weasyprint+soffice renders) have no shared state — `&`/`wait` in run.sh halves
+    wall time on multi-page decks.
+
+# Session 3 — L3 charts + Layer D
+
+13. **PptxGenJS defaults graphicFrame cy to 1 inch when h is omitted.** Tables rendered
+    correctly (renderers auto-grow from rows) while the DECLARED geometry was 96px —
+    invisible to pixel diff and visual QA, caught only by Layer D's IR-vs-OOXML IoU
+    (0.296 → fix → 0.996). Geometry-level instance of critique #9/#10's
+    "looks right, is wrong". Always pass h.
+
+14. **Chart recovery is a tier ladder, not a model.** tier1 reads data-* JSON attrs
+    (repo policy: source adapters first); tier2 reverse-engineers marks: numeric tick
+    labels left of bars → linear y→value scale, rect tops → values, texts below bars →
+    categories by nearest-x. Both emit identical IR; dataSource records provenance (I9).
+    Unparseable SVG → fallbackRegion with reason (I6), never silent.
+
+15. **Charts must be masked out of pixel diff.** Native PPT charts re-render with their
+    own engine (axes, gridlines) — pixel comparison vs source SVG is meaningless there.
+    Mask chart bboxes (294,400px on slide 3), validate them semantically via IR + Layer D
+    instead. diffPct denominator excludes masked pixels.
