@@ -9,6 +9,13 @@ category = "agent_skill_orchestration_reference"
 priority = 2
 
 [[repositories]]
+id = "hermes_agent"
+full_name = "NousResearch/hermes-agent"
+category = "agent_skill_orchestration_reference"
+priority = 2
+notes = "Remote reference only; read directly from GitHub when needed. Do not vendor snapshots unless source disappears or exact line evidence is required."
+
+[[repositories]]
 id = "swe_skills_bench"
 full_name = "GeniusHTX/SWE-Skills-Bench"
 category = "agent_skill_benchmark_reference"

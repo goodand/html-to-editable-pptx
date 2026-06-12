@@ -148,6 +148,8 @@ The default manifest contains the highest-priority seed repositories:
 
 Additional manifests add document layout, table recognition, chart extraction, visual validation, reference parser candidates, and agent skill references.
 
+`third_party/manifests/agent_skills.toml` tracks remote skill-lifecycle references such as `NousResearch/hermes-agent` for orchestration patterns like skill list/view/manage, import, and patch workflows. Read these sources directly from GitHub when needed; do not vendor local snapshots unless the source disappears or exact line evidence is required.
+
 ## Clone third-party repositories
 
 Use:
