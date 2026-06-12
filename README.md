@@ -2,7 +2,9 @@
 
 Editability-first HTML to PPTX parser project.
 
-The goal is to convert rendered HTML into **editable PowerPoint objects** by combining browser layout extraction, a Visual Object IR, semantic object detection, and PPTX object mapping.
+The current v0.1 implementation converts **LLM-generated static HTML/CSS slides**
+into editable PowerPoint objects by combining deterministic layout extraction, a
+Visual Object IR, semantic object detection, and PPTX object mapping.
 
 For the top-level purpose of the project — what end the technical
 work is intended to serve — read:
@@ -53,7 +55,39 @@ The following may remain asset-backed objects:
 - video thumbnails
 - complex visual effects that cannot be represented as stable native PPT objects
 
-## Planned pipeline
+## Current v0.1 scope
+
+Supported input is static HTML/CSS slides: `@page` CSS or
+`<section class="slide">` page boundaries, visible text, semantic HTML tables,
+block shapes, `<img>` assets, and inline SVG charts with `data-*` source data.
+
+Best-effort recovery is limited to heuristic inline SVG bar charts
+(`dataSource: "svg-marks"`), rectangular clipping for `overflow:hidden`, and
+opacity inheritance.
+
+Unsupported in v0.1: JS-rendered DOM, `<canvas>`, external runtime layout,
+CSS animation/transition semantics, video/audio embeds, CSS Grid/Flexbox
+reordering, and multi-file HTML bundles.
+
+## Current v0.1 pipeline
+
+```text
+static HTML / CSS slide document
+  -> WeasyPrint box-tree extraction
+  -> Visual Object IR
+  -> semantic candidates
+     - text
+     - shape
+     - image
+     - table
+     - chart
+     - fallbackRegion
+  -> editable PPTX object mapper
+  -> PPTX generation
+  -> rendered validation
+```
+
+## Future browser-backed pipeline
 
 ```text
 HTML / CSS / JS-rendered page
@@ -73,6 +107,9 @@ HTML / CSS / JS-rendered page
   -> PPTX generation
   -> rendered validation
 ```
+
+The browser-backed path is future scope. It becomes necessary if JS-rendered DOM
+support enters v1 scope; otherwise WeasyPrint remains the v0.1 extraction backend.
 
 ## Main modules
 

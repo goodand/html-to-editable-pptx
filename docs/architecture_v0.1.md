@@ -155,6 +155,10 @@ flowchart LR
 
 ## 4. Reuse blueprint
 
+> **Vocabulary crosswalk** (slot ↔ named slot ↔ category ↔ module ↔ semanticType)
+> is owned by `docs/vocabulary_v0.1.md` (D-2-2 final, 2026-06-12). Decision record:
+> `docs/integration_step2_consensus_v0.1.md`.
+
 ```mermaid
 flowchart TD
     subgraph ExistingRepos[Reusable Existing Repositories]
@@ -287,3 +291,52 @@ flowchart TD
 - Do not solve arbitrary SVG chart semantic recovery.
 - Do not create a full visual regression platform.
 - Do not optimize for batch throughput before the single-page path is stable.
+
+---
+
+## 9. Language and runtime topology (added 2026-06-12, D-2-3)
+
+**Decided:** Python + Node.js mixed runtime — both are canonical, not temporary.
+
+Prior non-canonical record (reuse_report_v0.1 §8 table_transformer non-goals, "Do not
+run Python in the bootstrap pipeline. Node-only.") is superseded by this section.
+That statement was scope-limited to table_transformer integration and was never
+ratified as a project-wide architecture decision. The bootstrap implementation
+(sessions 2–3, see docs/integration_step2_consensus_v0.1.md D-2-3) validated Python
+as the extraction backend; this section makes that topology official.
+
+### Runtime boundary rules
+
+```text
+Python runtime
+  src/extract/weasy_extract.py     HTML → IR JSON   (WeasyPrint CSS layout engine)
+  src/validate/validate_ab.py      Layer A + B       (bag-of-lines, MD5)
+  src/validate/layout_d.py         Layer D           (IR bbox vs OOXML IoU)
+
+Node.js runtime
+  src/map/ir_to_pptx.mjs           IR JSON → .pptx  (PptxGenJS, jszip, @xmldom/xmldom)
+  src/validate/pixel_c.mjs         Layer C           (pixelmatch PNG diff)
+  src/output/normalize-zip.js      OOXML repair      (transplanted from dom-to-pptx)
+```
+
+### Boundary constraints
+
+1. **File-system only IPC.** Python and Node communicate exclusively through files
+   (IR JSON, .pptx, .png, report JSON). No subprocess calls between the two runtimes.
+2. **Single orchestrator.** `scripts/run.sh` is the only entry point. It sequences
+   and parallelises the two runtimes.
+3. **Python owns layout, Node owns serialisation.** The extraction-to-IR step uses
+   Python because WeasyPrint is a deterministic, rule-based CSS layout engine with a
+   full box-tree API. The PPTX output step uses Node because PptxGenJS is Node-native
+   and the npm ecosystem covers OOXML tooling (jszip, @xmldom/xmldom).
+4. **No cross-runtime function calls.** If a future stage needs logic from both
+   sides, it goes through a new IR field, not an inter-process call.
+
+### Rationale for WeasyPrint vs Playwright (AE-05 partial answer)
+
+WeasyPrint is the v0.1 extraction backend because the current supported input class
+is static HTML/CSS slides. It is deterministic for the same input, avoids browser
+binary/runtime dependency, and exposes a direct box-tree API. The IR schema isolates
+the extraction backend choice: if JS-rendered DOM becomes v1 scope, a future
+Playwright migration should replace `src/extract/weasy_extract.py` without changing
+the IR contract or downstream mapper/validation modules.
