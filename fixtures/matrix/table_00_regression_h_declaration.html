@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@page { size: 1280px 720px; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Noto Sans CJK KR", sans-serif; }
+section.slide { width: 1280px; height: 720px; position: relative; background: #0f1729; }
+section.slide:not(:last-of-type) { page-break-after: always; }
+.title { position: absolute; left: 80px; top: 54px; font-size: 34px; font-weight: 700; color: #4ecca3; }
+.subtitle { position: absolute; left: 80px; top: 104px; font-size: 18px; color: #94a3b8; }
+.card { position: absolute; left: 100px; top: 154px; width: 1080px; height: 430px; background: #16213e; border: 2px solid #2a3b5c; }
+table.matrix { position: absolute; left: 160px; top: 176px; width: 960px; height: 360px; border-collapse: collapse; }
+th { font-size: 18px; font-weight: 700; color: #4ecca3; padding: 14px 18px; border-bottom: 2px solid #4ecca3; text-align: center; }
+td { font-size: 16px; color: #e8e8e8; padding: 18px 18px; border-bottom: 1px solid #2a3b5c; text-align: center; }
+</style>
+</head>
+<body>
+<section class="slide">
+  <p class="title">Table regression: declared height</p>
+  <p class="subtitle">Layer D must fail if addTable loses the table h declaration.</p>
+  <div class="card"></div>
+  <table class="matrix">
+    <tr><th>Object</th><th>Declared geometry</th><th>Validation</th></tr>
+    <tr><td>Table frame</td><td>960 by 360 px</td><td>Layer D IoU gate</td></tr>
+    <tr><td>Rows</td><td>Four rendered bands</td><td>OOXML xfrm check</td></tr>
+    <tr><td>Footer row</td><td>Should stay inside table bbox</td><td>No renderer-only repair</td></tr>
+  </table>
+</section>
+<section class="slide">
+  <p class="title">Matrix filler slide 2</p>
+  <p class="subtitle">Keeps LibreOffice rendering on the same multi-slide path as deck.html.</p>
+  <div class="card"></div>
+</section>
+<section class="slide">
+  <p class="title">Matrix filler slide 3</p>
+  <p class="subtitle">The regression target is slide 1.</p>
+  <div class="card"></div>
+</section>
+</body>
+</html>

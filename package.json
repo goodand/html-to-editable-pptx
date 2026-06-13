@@ -9,7 +9,9 @@
     "validate:c": "node src/validate/pixel_c.mjs",
     "validate:d": "python3 src/validate/layout_d.py",
     "run": "PATH=\"$PWD/.venv/bin:$PATH\" bash scripts/run.sh",
-    "test": "PATH=\"$PWD/.venv/bin:$PATH\" bash scripts/run.sh fixtures/deck.html"
+    "test": "PATH=\"$PWD/.venv/bin:$PATH\" bash scripts/run.sh fixtures/deck.html",
+    "test:matrix": "PATH=\"$PWD/.venv/bin:$PATH\" python3 scripts/run_matrix.py",
+    "probe:weasy": "PATH=\"$PWD/.venv/bin:$PATH\" python3 scripts/probe_weasy.py"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.10",

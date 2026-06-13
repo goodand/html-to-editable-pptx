@@ -1,0 +1,51 @@
+{
+  "version": "0.1.0",
+  "outRoot": "out/matrix",
+  "fixtures": [
+    {
+      "id": "table_00_regression_tbody_rows",
+      "category": "table",
+      "input": "fixtures/matrix/table_00_regression_tbody_rows.html",
+      "intent": "Implicit TableRowGroupBox/tbody wrappers must not produce zero extracted rows.",
+      "expectedBehavior": "pass",
+      "primaryGate": "layerA",
+      "probeRequired": true,
+      "gates": {
+        "layerA": true,
+        "layerB": true,
+        "minLayerDWorstIoU": 0.9,
+        "maxFallback": 0
+      }
+    },
+    {
+      "id": "table_00_regression_h_declaration",
+      "category": "table",
+      "input": "fixtures/matrix/table_00_regression_h_declaration.html",
+      "intent": "PPTX table geometry must preserve declared table height; Layer D catches renderer auto-repair.",
+      "expectedBehavior": "pass",
+      "primaryGate": "layerD",
+      "probeRequired": true,
+      "gates": {
+        "layerA": true,
+        "layerB": true,
+        "minLayerDWorstIoU": 0.9,
+        "maxFallback": 0
+      }
+    },
+    {
+      "id": "table_01_never_single_column",
+      "category": "table",
+      "input": "fixtures/matrix/table_01_never_single_column.html",
+      "intent": "Columns that only appear inside colspan cells must still receive nonzero widths.",
+      "expectedBehavior": "pass",
+      "primaryGate": "layerD",
+      "probeRequired": true,
+      "gates": {
+        "layerA": true,
+        "layerB": true,
+        "minLayerDWorstIoU": 0.85,
+        "maxFallback": 0
+      }
+    }
+  ]
+}

@@ -16,6 +16,7 @@ out/*.pdf
 out/*.pptx
 out/*.json
 out/*.err
+out/*/
 !out/.gitkeep
 
 # macOS

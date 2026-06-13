@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@page { size: 1280px 720px; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Noto Sans CJK KR", sans-serif; }
+section.slide { width: 1280px; height: 720px; position: relative; background: #0f1729; }
+section.slide:not(:last-of-type) { page-break-after: always; }
+.title { position: absolute; left: 80px; top: 54px; font-size: 34px; font-weight: 700; color: #4ecca3; }
+.subtitle { position: absolute; left: 80px; top: 104px; font-size: 18px; color: #94a3b8; }
+.card { position: absolute; left: 100px; top: 154px; width: 1080px; height: 260px; background: #16213e; border: 2px solid #2a3b5c; }
+table.matrix { position: absolute; left: 140px; top: 180px; width: 1000px; border-collapse: collapse; }
+th { font-size: 18px; font-weight: 700; color: #4ecca3; padding: 12px 18px; border-bottom: 2px solid #4ecca3; text-align: center; }
+td { font-size: 16px; color: #e8e8e8; padding: 12px 18px; border-bottom: 1px solid #2a3b5c; text-align: center; }
+</style>
+</head>
+<body>
+<section class="slide">
+  <p class="title">Table regression: implicit tbody rows</p>
+  <p class="subtitle">Rows must be collected through WeasyPrint TableRowGroupBox wrappers.</p>
+  <div class="card"></div>
+  <table class="matrix">
+    <tr><th>Stage</th><th>Expected row text</th><th>Status</th></tr>
+    <tr><td>Extract</td><td>Header and body rows preserved</td><td>Required</td></tr>
+    <tr><td>Map</td><td>Native PPT table emitted</td><td>Required</td></tr>
+    <tr><td>Validate</td><td>Layer A sees all table lines</td><td>Required</td></tr>
+  </table>
+</section>
+<section class="slide">
+  <p class="title">Matrix filler slide 2</p>
+  <p class="subtitle">Keeps LibreOffice rendering on the same multi-slide path as deck.html.</p>
+  <div class="card"></div>
+</section>
+<section class="slide">
+  <p class="title">Matrix filler slide 3</p>
+  <p class="subtitle">The regression target is slide 1.</p>
+  <div class="card"></div>
+</section>
+</body>
+</html>
