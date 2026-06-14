@@ -18,6 +18,7 @@ These skills are *project-agnostic*. They do not assume any specific repository 
 - [`interview-facilitation`](./interview-facilitation/SKILL.md) — Run a structured one-decision-per-turn interview with depth-over-roundtrips bias.
 - [`consensus-recording`](./consensus-recording/SKILL.md) — Record interview outcomes as a non-authoritative repository document with prose for humans and a YAML index for agents.
 - [`task-delegation`](./task-delegation/SKILL.md) — Write self-contained instruction sheets that hand mechanical work to another agent with explicit environment requirements.
+- [`repo-execution-gate`](./repo-execution-gate/SKILL.md) — Execute a delegated repository task safely by gating git environment, verification, staging, commit/push, and patch export.
 - [`evaluation-followup`](./evaluation-followup/SKILL.md) — Process external evaluation findings into prioritized work groups with clear dependencies.
 - [`session-handoff`](./session-handoff/SKILL.md) — When context grows too large, split outputs into a one-time session summary and a permanent methodology Skill.
 - [`iteration-resilience`](./iteration-resilience/SKILL.md) — Diagnose and recover when the same instruction halts repeatedly, by treating environment assumptions as falsifiable.
