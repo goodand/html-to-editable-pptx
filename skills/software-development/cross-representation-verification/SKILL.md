@@ -34,7 +34,10 @@ NO HANDLER WITHOUT A PROBE.  NO SHIP WITHOUT A DECLARATION-LEVEL CHECK.
 
 If you have not printed the real structure, you may not write code against it.
 If you have only looked at a render, you have not validated the output.
-Do not ship before running all four layers (Layer A through Layer D).
+Do not ship a converter change before running all applicable ship gates across
+the four layers (Layer A through Layer D). During fixture-matrix growth, a
+single fixture may opt into only the layers that are meaningful for its
+`primaryGate`; that is fixture evidence, not a full ship claim.
 
 ## When to Use
 
@@ -54,8 +57,10 @@ another:
 
 ## Data Contract
 
-This skill operates on a **Visual Object IR** (Intermediate Representation) as
-defined in `src/ir/schema.ts`. The key fields every output node must carry:
+For a concrete pipeline, define a local IR or equivalent output contract before
+validation. In `html-to-editable-pptx`, that contract is the **Visual Object IR**
+in `src/ir/schema.ts`. Other projects should map these roles to their own
+schema. The key fields every output node should carry are:
 
 | Field | Type | Constraint | Purpose |
 |---|---|---|---|
@@ -67,7 +72,7 @@ defined in `src/ir/schema.ts`. The key fields every output node must carry:
 
 A **consistent run** means:
 1. Given the same HTML input, the pipeline produces byte-identical IR JSON.
-2. The validator (`validateIR`) reports zero errors.
+2. The local schema validator reports zero errors.
 3. All three validation layers (bag-of-lines, MD5, IoU) produce the same
    pass/fail verdict.
 
@@ -266,9 +271,9 @@ delegate_task(
 )
 ```
 
-### Verification script
+### Example verification script
 
-Run the full four-layer check with the bundled helper:
+For this repository, run the full four-layer check with the bundled helper:
 
 ```bash
 # from the project root (generates out/<name>.ab.json, .d.json, diff-N.png)

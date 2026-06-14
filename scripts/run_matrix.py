@@ -59,7 +59,14 @@ def evaluate(fx, run, out_dir):
 
     checks = []
     gates = fx.get("gates", {})
-    add_check(checks, "mustNotCrash", run.returncode == 0, f"exit={run.returncode}")
+    render_gate = "maxLayerCDiffPct" in gates or gates.get("renderedPngs")
+    if "expectedExitCode" in gates:
+        add_check(checks, "exitCode", run.returncode == gates["expectedExitCode"], {
+            "actual": run.returncode,
+            "expected": gates["expectedExitCode"],
+        })
+    else:
+        add_check(checks, "mustNotCrash", run.returncode == 0, f"exit={run.returncode}")
 
     if gates.get("layerA"):
         ok = bool(ab and ab.get("layerA_semantic", {}).get("pass") is True)
@@ -88,9 +95,15 @@ def evaluate(fx, run, out_dir):
             "pptxPngs": len(dst_pngs),
         })
 
-    unexpected = any(not c["pass"] for c in checks)
+    failed = [c for c in checks if not c["pass"]]
+    environment_blocked = bool(render_gate and run.returncode != 0)
     expected = fx["expectedBehavior"]
-    status = "unexpected_fail" if unexpected else expected
+    if environment_blocked:
+        status = "environment_blocked"
+    elif failed:
+        status = "unexpected_fail"
+    else:
+        status = expected
     return {
         "id": fx["id"],
         "category": fx["category"],
@@ -98,6 +111,8 @@ def evaluate(fx, run, out_dir):
         "primaryGate": fx.get("primaryGate"),
         "status": status,
         "outputDir": str(out_dir),
+        "runReturnCode": run.returncode,
+        "renderGate": "enabled" if render_gate else "disabled",
         "checks": checks,
         "layerC": layer_c,
         "mapreport": report,
@@ -132,6 +147,7 @@ def run_fixture(fx, out_root):
                 "primaryGate": fx.get("primaryGate"),
                 "status": "unexpected_fail",
                 "outputDir": str(out_dir),
+                "probeOutput": str(out_dir / "probe.json"),
                 "checks": [{"name": "probe", "pass": False, "detail": f"exit={probe.returncode}"}],
             }
 
@@ -168,6 +184,7 @@ def main():
         "version": manifest.get("version"),
         "total": len(results),
         "unexpectedFail": sum(1 for r in results if r["status"] == "unexpected_fail"),
+        "environmentBlocked": sum(1 for r in results if r["status"] == "environment_blocked"),
         "byStatus": {},
         "results": results,
     }
@@ -178,7 +195,7 @@ def main():
     report_path.parent.mkdir(exist_ok=True)
     report_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"matrix report: {report_path}")
-    return 1 if summary["unexpectedFail"] else 0
+    return 1 if summary["unexpectedFail"] or summary["environmentBlocked"] else 0
 
 
 if __name__ == "__main__":

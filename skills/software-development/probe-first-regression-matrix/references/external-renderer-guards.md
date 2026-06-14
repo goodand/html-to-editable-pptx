@@ -29,6 +29,11 @@ evidence.
    reproducibility or thresholds. If the environment is unstable, keep the render
    gate looser or out of the primary gate.
 
+7. **Classify renderer blocks separately.** A renderer crash or missing declared
+   render artifact is not parser correctness. Report it as `environment_blocked`
+   when the runner can distinguish it; otherwise fail the fixture and name the
+   renderer as the blocking surface.
+
 ## Report Fields
 
 Renderer-backed fixture reports should include:

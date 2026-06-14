@@ -73,7 +73,9 @@ Each fixture entry should carry the following fields or equivalents:
   "gates": {
     "layerA": true,
     "minLayerDWorstIoU": 0.9,
-    "maxFallback": 0
+    "maxFallback": 0,
+    "mustReportFallback": false,
+    "expectedExitCode": 0
   }
 }
 ```
@@ -89,6 +91,9 @@ Expected behavior states:
 
 `primaryGate` names the layer that decides the fixture. A fixture may collect
 other evidence, but not all layers are equally meaningful for every fixture.
+Use `expectedExitCode` when an `unsupported` or `known-limit` fixture should fail
+explicitly instead of producing a fallback. Use `mustReportFallback` when the
+expected result is a reported fallback rather than a crash.
 
 ## Procedure
 
@@ -102,7 +107,10 @@ other evidence, but not all layers are equally meaningful for every fixture.
 
 3. **Record the probe as evidence.** Store probe output in the fixture's isolated
    output directory or attach it to the report. A future regression should be
-   able to compare implementation assumptions against observed structure.
+   able to compare implementation assumptions against observed structure. If
+   probe output lives under ignored generated directories, the matrix runner
+   must regenerate it and report the path; commit probe output only when the
+   project treats it as a durable baseline.
 
 4. **Add regression fixtures before breadth fixtures.** The first fixtures in a
    category should reproduce bugs already observed. Feature exploration comes
@@ -121,7 +129,9 @@ other evidence, but not all layers are equally meaningful for every fixture.
 
 8. **Make renderer gates opt-in.** External renderers often carry global process
    state, file locks, display assumptions, or auto-repair behavior. Enable them
-   only when the fixture declares a render gate.
+   only when the fixture declares a render gate. A full shipping suite may still
+   require representative render gates even when individual matrix fixtures keep
+   render checks disabled.
 
 9. **Fail on missing declared evidence.** If a fixture declares rendered PNGs,
    reports, or probe output, absence is a failure. Silent "no files matched"
@@ -129,7 +139,8 @@ other evidence, but not all layers are equally meaningful for every fixture.
 
 10. **Write a matrix report.** Each fixture result should include fixture id,
     expected behavior, primary gate, check results, output directory, and final
-    status.
+    status. Status should distinguish expected states from `unexpected_fail` and
+    renderer/environment failures such as `environment_blocked`.
 
 ## Pitfalls
 
@@ -157,4 +168,6 @@ The matrix is correctly designed when:
 - renderer/pixel gates are enabled only by fixture declaration;
 - a missing declared artifact fails the fixture;
 - the matrix report distinguishes `pass`, `degraded`, `known-limit`,
-  `unsupported`, and `unexpected_fail`.
+  `unsupported`, `unexpected_fail`, and `environment_blocked`;
+- unsupported fixtures declare either an expected exit code or a fallback report
+  gate, so unsupported does not mean accidental crash.

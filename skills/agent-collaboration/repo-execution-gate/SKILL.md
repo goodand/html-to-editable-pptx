@@ -50,7 +50,7 @@ task's intended changes and required checks are already specified.
 |---|---|
 | Prove this is a git worktree | `git rev-parse --show-toplevel` |
 | Prove worktree status | `git status --short --ignored` |
-| Sync only by fast-forward | `git pull --ff-only origin main` |
+| Sync only by fast-forward | `git pull --ff-only <remote> <branch>` |
 | Inspect intended edits | `git diff --stat` and `git diff` |
 | Stage only intended files | `git add <file> <file> ...` |
 | Prove staged scope | `git diff --cached --name-only` |
@@ -73,9 +73,11 @@ task's intended changes and required checks are already specified.
    changes as user-owned unless the task explicitly says otherwise. Dirty
    worktrees are allowed only when the staged set can be kept explicit.
 
-4. **Synchronize conservatively.** If the packet requires current `main`, run
-   `git pull --ff-only origin main`. If fast-forward pull fails, halt and report.
-   Do not merge, rebase, or rewrite history unless the packet explicitly says so.
+4. **Synchronize conservatively.** If the packet requires a current base, use the
+   packet's remote and branch, for example `git pull --ff-only <remote> <branch>`.
+   Use `origin main` only when the packet or repository policy says that is the
+   base. If fast-forward pull fails, halt and report. Do not merge, rebase, or
+   rewrite history unless the packet explicitly says so.
 
 5. **Apply the task with narrow file ownership.** Edit only the files required by
    the packet. Leave unrelated dirty files and generated caches alone unless they
@@ -116,6 +118,11 @@ The report must include:
 - any generated files intentionally excluded.
 
 Patch export is not a success claim. It is a portable handoff state.
+
+Git patch export requires a real git worktree. A copied snapshot without `.git`
+can support a file bundle or manually produced diff only when the task packet
+explicitly permits non-git handoff and a trustworthy baseline exists; otherwise
+use halt-and-report.
 
 ## Halt Conditions
 
