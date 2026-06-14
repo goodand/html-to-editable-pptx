@@ -9,7 +9,7 @@ metadata:
   hermes:
     tags: [parsing, conversion, pipelines, validation, verification, cross-checking, converters]
     category: software-development
-    related_skills: [systematic-debugging, test-driven-development, plan]
+    related_skills: [probe-first-regression-matrix, systematic-debugging, test-driven-development, plan]
 ---
 
 # Cross-Representation Verification
@@ -217,6 +217,14 @@ or layer it.**
 | 1. Probe-first | New tree/AST, handler not firing | Minimal fixture → print real structure → defensive match | Handler dispatch explained by printed structure, not assumed |
 | 2. Dual-source | Engine hides provenance / version drift | Second stdlib parse of raw source, join by order queue | Every emitted object carries provenance from the source stream |
 | 3. Declaration layers | Before shipping any output file | Run layers A–D; mask semantic regions from C | All layers pass on declarations, not renders |
+
+## Fixture Matrix Growth
+
+After a probe explains the real processing model, use
+[`probe-first-regression-matrix`](../probe-first-regression-matrix/SKILL.md) to
+turn that evidence into executable fixtures: regression-first coverage,
+`expectedBehavior`, `primaryGate`, isolated output directories, and opt-in
+renderer gates.
 
 ## Verification
 

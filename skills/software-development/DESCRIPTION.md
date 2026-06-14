@@ -11,3 +11,4 @@ The skills are project-agnostic and reusable across any format conversion projec
 ## Skills in this category
 
 - [`cross-representation-verification`](./cross-representation-verification/SKILL.md) — Probe-first classification, dual-source extraction, and declaration-level validation for format converters and parsers.
+- [`probe-first-regression-matrix`](./probe-first-regression-matrix/SKILL.md) — Grow parser/converter fixture matrices with probe evidence, regression-first fixtures, primary gates, isolated outputs, and opt-in renderer checks.
